@@ -1,9 +1,9 @@
-import instane from '../instane';
+import instane from "../instane";
 
 export const adminAdminApi = {
   getAllAdmin: async (values) => {
     try {
-      const url = '/admin/admin/list';
+      const url = "/admin/admin/list";
       const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
@@ -12,7 +12,7 @@ export const adminAdminApi = {
   },
   createAdmin: async (values) => {
     try {
-      const url = '/admin/admin/create';
+      const url = "/admin/admin/create";
       const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
@@ -21,7 +21,7 @@ export const adminAdminApi = {
   },
   updateAdmin: async (values) => {
     try {
-      const url = '/admin/admin/update';
+      const url = "/admin/admin/update";
       const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
@@ -30,7 +30,7 @@ export const adminAdminApi = {
   },
   editProfile: async (values) => {
     try {
-      const url = '/admin/admin/edit';
+      const url = "/admin/admin/edit";
       const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
@@ -58,6 +58,24 @@ export const adminAdminApi = {
   trashAdmin: async (values) => {
     try {
       const url = `/admin/admin/trash`;
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  getPermissions: async (id) => {
+    try {
+      const url = `/admin/role/${id}`;
+      const res = await instane.post(url);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  updatePermissions: async (id, values) => {
+    try {
+      const url = `/admin/role/update/${id}`;
       const res = await instane.post(url, values);
       return res.data;
     } catch (error) {

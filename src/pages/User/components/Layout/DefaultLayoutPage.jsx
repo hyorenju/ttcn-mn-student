@@ -9,10 +9,7 @@ export function DefaultLayoutPage({ children }) {
       <Navigate />
       {children}
       <Contact />
-      <FloatButton.BackTop
-        className="bg-primary-color"
-        visibilityHeight={600}
-      />
+      <FloatButton.BackTop visibilityHeight={600} />
       <Footer />
     </div>
   );

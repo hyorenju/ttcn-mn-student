@@ -15,9 +15,6 @@ export const urlImage = [
     url: "https://scontent.fhan14-4.fna.fbcdn.net/v/t1.6435-9/131347998_3428657813868913_1006378787087488705_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=qlvAFM5gzdMAX_3EIjF&_nc_ht=scontent.fhan14-4.fna&oh=00_AfDqRGpOMtCSkEji6CVniv5xkFXIgtig-N_gBm94Pcza5g&oe=65477FE9",
   },
   {
-    url: "https://scontent.fhan14-1.fna.fbcdn.net/v/t1.6435-9/131136764_3428658380535523_510642696984158301_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=7q45Zl1YNGgAX-JUC69&_nc_ht=scontent.fhan14-1.fna&oh=00_AfBVLpLGYEgT1i3giyXagSu2O-wX4fILgR0IIyOfx3t1MQ&oe=65476E2C",
-  },
-  {
     url: "https://scontent.fhan14-1.fna.fbcdn.net/v/t1.6435-9/130937425_3428658040535557_909591053144213835_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=0ObHUvCJgOkAX8Yzq31&_nc_ht=scontent.fhan14-1.fna&oh=00_AfAUluWz_iVEA0fXhnghvXMbGF9WN2CiWVc0_YuFuJdNbg&oe=65479E6A",
   },
   {

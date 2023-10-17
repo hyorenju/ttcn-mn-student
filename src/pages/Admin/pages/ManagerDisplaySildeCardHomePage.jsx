@@ -7,7 +7,7 @@ import { adminDisplayApi } from "../../../API/admin/adminDisplayApi";
 import { ButtonCustom } from "../../../components/Button";
 import { ModalFormErrorImport } from "../components/Modal";
 
-function ManagerErrorImportPage() {
+function ManagerDisplaySildeCardHomePage() {
   const { Title } = Typography;
   const dispatch = useDispatch();
   const [pageCurrent, setPageCurrent] = useState(1);
@@ -23,7 +23,7 @@ function ManagerErrorImportPage() {
       await adminDisplayApi.getDisplayList({
         page: pageCurrent,
         size: pageSize,
-        location: "ErrorImport",
+        location: "Swiper",
       }),
   });
 
@@ -40,11 +40,6 @@ function ManagerErrorImportPage() {
   // ====================================
 
   const columns = [
-    {
-      align: "center",
-      width: "3%",
-      dataIndex: "id",
-    },
     {
       width: "15%",
       title: "Ảnh mẫu",
@@ -89,7 +84,7 @@ function ManagerErrorImportPage() {
             textAlign: "center",
           }}
         >
-          Lỗi nhập dữ liệu
+          Hình ảnh lịch sử phát triển HomePage
         </Title>
         <Table
           scroll={{
@@ -128,4 +123,4 @@ function ManagerErrorImportPage() {
   );
 }
 
-export default ManagerErrorImportPage;
+export default ManagerDisplaySildeCardHomePage;

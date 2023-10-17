@@ -6,12 +6,13 @@ import { DefaultLayoutAdmin } from "./pages/Admin/components/Layout";
 import AdminChangeInfomation from "./pages/Admin/pages/AdminChangeInfomation";
 import ManagerAuthorizationPage from "./pages/Admin/pages/ManagerAuthorizationPage";
 import ManagerClassPage from "./pages/Admin/pages/ManagerClassPage";
-import ManagerClassficationPage from "./pages/Admin/pages/ManagerClassficationPage";
 import ManagerCoursePage from "./pages/Admin/pages/ManagerCoursePage";
+import ManagerDisplayHomePage from "./pages/Admin/pages/ManagerDisplayHomePage";
+import ManagerDisplaySildeCardHomePage from "./pages/Admin/pages/ManagerDisplaySildeCardHomePage";
+import ManagerDisplaySlideHomePage from "./pages/Admin/pages/ManagerDisplaySlideHomePage";
 import ManagerErrorImportPage from "./pages/Admin/pages/ManagerErrorImportPage";
 import ManagerHomePage from "./pages/Admin/pages/ManagerHomePage";
 import ManagerMajorPage from "./pages/Admin/pages/ManagerMajorPage";
-import ManagerMajorficationPage from "./pages/Admin/pages/ManagerMajorficationPage";
 import ManagerNewsPage from "./pages/Admin/pages/ManagerNewsPage";
 import ManagerSemestersPage from "./pages/Admin/pages/ManagerSemestersPage";
 import ManagerStatisticalPage from "./pages/Admin/pages/ManagerStatisticalPage";
@@ -20,9 +21,7 @@ import ManagerStudentPage from "./pages/Admin/pages/ManagerStudentPage";
 import ManagerTermPointPage from "./pages/Admin/pages/ManagerTermPointPage";
 import AboutUsPageUser from "./pages/User/pages/AboutUsPageUser";
 import ChangePasswordPage from "./pages/User/pages/ChangePasswordPage";
-import ConfirmChangPassword from "./pages/User/pages/ConfirmChangePassword";
 import DocumentPageUser from "./pages/User/pages/DocumentPageUser";
-import ForgotPasswordPage from "./pages/User/pages/ForgotPassword";
 import HomePageUser from "./pages/User/pages/HomePageUser";
 import NewsPageDetailUser from "./pages/User/pages/NewsPageDetailUser";
 import NewsPageUser from "./pages/User/pages/NewsPageUser";
@@ -52,11 +51,6 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/forgotpassword",
-    element: <ForgotPasswordPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
     path: "/documents",
     element: <DocumentPageUser />,
     errorElement: <ErrorPage />,
@@ -69,11 +63,6 @@ const router = createBrowserRouter([
   {
     path: "/changepassword",
     element: <ChangePasswordPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/confirm-changepassword/:id",
-    element: <ConfirmChangPassword />,
     errorElement: <ErrorPage />,
   },
 
@@ -124,16 +113,6 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "class-classification",
-        element: <ManagerClassficationPage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "major-classification",
-        element: <ManagerMajorficationPage />,
-        errorElement: <ErrorPage />,
-      },
-      {
         path: "status",
         element: <ManagerStatusPage />,
         errorElement: <ErrorPage />,
@@ -156,6 +135,21 @@ const router = createBrowserRouter([
       {
         path: "news",
         element: <ManagerNewsPage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "display-homepage",
+        element: <ManagerDisplayHomePage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "slidecard-homepage",
+        element: <ManagerDisplaySildeCardHomePage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "slide-homepage",
+        element: <ManagerDisplaySlideHomePage />,
         errorElement: <ErrorPage />,
       },
     ],

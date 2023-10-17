@@ -1,8 +1,8 @@
-import { Button, Form, Input, Typography, message } from 'antd';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { sendRequestForgotStudent } from '../../../API/axios';
-import { Footer } from '../components/Layout/Footer';
+import { Button, Form, Input, Typography, message } from "antd";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sendRequestForgotStudent } from "../../../API/axios";
+import { DefaultLayoutPage } from "../components/Layout/DefaultLayoutPage";
 
 function ForgotPasswordPage(props) {
   const { Text } = Typography;
@@ -11,7 +11,10 @@ function ForgotPasswordPage(props) {
 
   const onFinish = (values) => {
     setLoadingSubmit(true);
-    sendRequestForgotStudent({ values: values, link: `http://localhost:3000/confirm-changepassword/${values.id}` })
+    sendRequestForgotStudent({
+      values: values,
+      link: `http://localhost:3000/confirm-changepassword/${values.id}`,
+    })
       .then((res) => {
         if (res.data?.success === true) {
           navigate(`/`);
@@ -23,12 +26,12 @@ function ForgotPasswordPage(props) {
   };
 
   return (
-    <div>
-      <div className='bg-slate-200'>
-        <div className='max-w-[1100px] mx-auto bg-slate-100 pb-8 min-h-[70vh] justify-center flex'>
-          <div className='p-4 mt-20'>
+    <DefaultLayoutPage>
+      <div className="bg-slate-200">
+        <div className="max-w-[1100px] mx-auto bg-slate-100 pb-8 min-h-[70vh] justify-center flex">
+          <div className="p-4 mt-20">
             <Form
-              name='basic'
+              name="basic"
               labelCol={{
                 span: 8,
               }}
@@ -42,15 +45,15 @@ function ForgotPasswordPage(props) {
                 remember: true,
               }}
               onFinish={onFinish}
-              autoComplete='off'
+              autoComplete="off"
             >
               <Form.Item
                 label={<Text style={{ marginRight: 50 }}>Tên đăng nhập</Text>}
-                name='id'
+                name="id"
                 rules={[
                   {
                     required: true,
-                    message: 'Nhập đầy đủ thông tin',
+                    message: "Nhập đầy đủ thông tin",
                   },
                 ]}
               >
@@ -59,11 +62,11 @@ function ForgotPasswordPage(props) {
 
               <Form.Item
                 label={<Text>Email</Text>}
-                name='email'
+                name="email"
                 rules={[
                   {
                     required: true,
-                    message: 'Nhập đầy đủ thông tin',
+                    message: "Nhập đầy đủ thông tin",
                   },
                 ]}
               >
@@ -76,7 +79,11 @@ function ForgotPasswordPage(props) {
                   span: 16,
                 }}
               >
-                <Button type='primary' htmlType='submit' loading={loadingSubmit}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loadingSubmit}
+                >
                   Gửi email
                 </Button>
               </Form.Item>
@@ -84,10 +91,7 @@ function ForgotPasswordPage(props) {
           </div>
         </div>
       </div>
-      <div>
-        <Footer />
-      </div>
-    </div>
+    </DefaultLayoutPage>
   );
 }
 

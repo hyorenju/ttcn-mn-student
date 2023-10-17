@@ -401,7 +401,7 @@ function ManagerTermPointPage() {
           scroll={{
             y: 630,
           }}
-          rowKey="studentId"
+          rowKey="id"
           rowSelection={{
             onChange: handleChangeRowSelection,
           }}

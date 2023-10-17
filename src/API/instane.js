@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const instane = axios.create({
-  baseURL: "https://student-manager-a9966b285f24.herokuapp.com",
+  baseURL: "http://localhost:8080",
   headers: {
     "ngrok-skip-browser-warning": "1",
   },

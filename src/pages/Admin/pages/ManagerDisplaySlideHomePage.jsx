@@ -7,7 +7,7 @@ import { adminDisplayApi } from "../../../API/admin/adminDisplayApi";
 import { ButtonCustom } from "../../../components/Button";
 import { ModalFormErrorImport } from "../components/Modal";
 
-function ManagerErrorImportPage() {
+function ManagerDisplaySlideHomePage() {
   const { Title } = Typography;
   const dispatch = useDispatch();
   const [pageCurrent, setPageCurrent] = useState(1);
@@ -23,7 +23,7 @@ function ManagerErrorImportPage() {
       await adminDisplayApi.getDisplayList({
         page: pageCurrent,
         size: pageSize,
-        location: "ErrorImport",
+        location: "Slider",
       }),
   });
 
@@ -89,7 +89,7 @@ function ManagerErrorImportPage() {
             textAlign: "center",
           }}
         >
-          Lỗi nhập dữ liệu
+          Hiển thị slide trang chủ
         </Title>
         <Table
           scroll={{
@@ -128,4 +128,4 @@ function ManagerErrorImportPage() {
   );
 }
 
-export default ManagerErrorImportPage;
+export default ManagerDisplaySlideHomePage;

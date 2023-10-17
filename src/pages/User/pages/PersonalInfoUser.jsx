@@ -20,7 +20,7 @@ import { DefaultLayoutPage } from "../components/Layout/DefaultLayoutPage";
 import { ModalEditPhoneNumber } from "../components/ModalForm";
 
 function PersonalInfoUser() {
-  const dataStudentLocal = JSON.parse(sessionStorage.getItem("info_student"));
+  const dataStudentLocal = JSON.parse(localStorage.getItem("info_student"));
   const [openModalFormPhoneNumber, setOpenModalFormPhoneNumber] =
     useState(false);
   const [openDrawerPoint, setOpenDrawerPoint] = useState(false);
@@ -55,7 +55,7 @@ function PersonalInfoUser() {
     onChange(info) {
       const { response, status } = info.file;
       if (response && response?.success === true) {
-        sessionStorage.setItem("info_student", JSON.stringify(response.data));
+        localStorage.setItem("info_student", JSON.stringify(response.data));
         notificationSuccess(`Upload ${info.file.name} thành công`);
       } else if (response?.success === false) {
         notificationError(`Upload ${info.file.name} thất bại`);

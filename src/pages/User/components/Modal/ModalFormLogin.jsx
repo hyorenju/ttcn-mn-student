@@ -3,7 +3,7 @@ import { ModalForm, ProForm, ProFormText } from "@ant-design/pro-components";
 import { useMutation } from "@tanstack/react-query";
 import { Space } from "antd";
 import Cookies from "js-cookie";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { visitor } from "../../../../API/Visistor/visitor";
@@ -13,11 +13,13 @@ import {
   notificationSuccess,
 } from "../../../../components/Notification";
 import { setOpenModal } from "../../../../redux/Modal/modalLoginSlice";
+import { ModalFormConfirmEmail } from "../ModalForm";
 
 export function ModalFormLogin({ onChangeClickOpen }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const openModal = useSelector((state) => state.modalLogin.openModal);
+  const [openModalConfirmEmail, setOpenModalConfirmEmail] = useState(false);
 
   const handleLogin = useMutation({
     mutationKey: ["login"],
@@ -26,12 +28,12 @@ export function ModalFormLogin({ onChangeClickOpen }) {
       if (res && res.success === true && res.data) {
         Cookies.set("access_token", res.data.jwt);
         if (res.data.roleId === "STUDENT") {
-          sessionStorage.setItem("info_student", JSON.stringify(res.data));
+          localStorage.setItem("info_student", JSON.stringify(res.data));
           notificationSuccess("Đăng nhập thành công");
           dispatch(setOpenModal(false));
           window.location.reload();
         } else if (res.data.roleId !== "STUDENT") {
-          sessionStorage.setItem("info_admin", JSON.stringify(res.data));
+          localStorage.setItem("info_admin", JSON.stringify(res.data));
           notificationSuccess("Đăng nhập thành công");
           dispatch(setOpenModal(false));
           navigate(`/manage`);
@@ -48,7 +50,7 @@ export function ModalFormLogin({ onChangeClickOpen }) {
     handleLogin.mutate(values);
   };
   const handleClickForgotPassword = () => {
-    navigate("/forgotpassword");
+    setOpenModalConfirmEmail(true);
   };
   const handleClickSubmit = (props) => {
     props.submit();
@@ -77,7 +79,7 @@ export function ModalFormLogin({ onChangeClickOpen }) {
                   onClick={handleClickForgotPassword}
                   className="opacity-50 font-saira italic hover:opacity-100 hover:text-primary-color hover:cursor-pointer"
                 >
-                  Quên mật khẩu
+                  Quên mật khẩu ?
                 </p>
                 <Space size={10}>
                   <ButtonCustom
@@ -86,12 +88,12 @@ export function ModalFormLogin({ onChangeClickOpen }) {
                     title="Đăng nhập"
                     key="submit"
                     handleClick={() => handleClickSubmit(props)}
-                  ></ButtonCustom>
+                  />
                   <ButtonCustom
                     title="Hủy"
                     key="cancel"
                     handleClick={handleClickCancel}
-                  ></ButtonCustom>
+                  />
                 </Space>
               </div>,
             ];
@@ -135,6 +137,14 @@ export function ModalFormLogin({ onChangeClickOpen }) {
           />
         </ProForm.Group>
       </ModalForm>
+      <ModalFormConfirmEmail
+        open={openModalConfirmEmail}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOpenModalConfirmEmail(false);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { adminDisplayApi } from "../../../API/admin/adminDisplayApi";
 import { ButtonCustom } from "../../../components/Button";
 import { ModalFormErrorImport } from "../components/Modal";
 
-function ManagerErrorImportPage() {
+function ManagerDisplayHomePage() {
   const { Title } = Typography;
   const dispatch = useDispatch();
   const [pageCurrent, setPageCurrent] = useState(1);
@@ -23,7 +23,7 @@ function ManagerErrorImportPage() {
       await adminDisplayApi.getDisplayList({
         page: pageCurrent,
         size: pageSize,
-        location: "ErrorImport",
+        location: "HomeBody",
       }),
   });
 
@@ -41,11 +41,6 @@ function ManagerErrorImportPage() {
 
   const columns = [
     {
-      align: "center",
-      width: "3%",
-      dataIndex: "id",
-    },
-    {
       width: "15%",
       title: "Ảnh mẫu",
       align: "center",
@@ -61,10 +56,10 @@ function ManagerErrorImportPage() {
     {
       title: "Tiêu đề",
       align: "center",
-      width: "25%",
+      width: "10%",
       dataIndex: "title",
     },
-    { title: "Nội dung", dataIndex: "content", width: "30%" },
+    { title: "Nội dung", dataIndex: "content", width: "40%" },
     {
       align: "center",
       width: "10%",
@@ -89,7 +84,7 @@ function ManagerErrorImportPage() {
             textAlign: "center",
           }}
         >
-          Lỗi nhập dữ liệu
+          Hiển thị trang chủ
         </Title>
         <Table
           scroll={{
@@ -128,4 +123,4 @@ function ManagerErrorImportPage() {
   );
 }
 
-export default ManagerErrorImportPage;
+export default ManagerDisplayHomePage;

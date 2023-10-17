@@ -1,13 +1,5 @@
 import { PoweroffOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Layout,
-  Menu,
-  Space,
-  Tooltip,
-  Typography
-} from "antd";
+import { Avatar, Button, Layout, Menu, Space, Tooltip, Typography } from "antd";
 import Cookies from "js-cookie";
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -16,9 +8,7 @@ export function DefaultLayoutAdmin(props) {
   const { Title } = Typography;
   const navigate = useNavigate();
   const { Header, Sider, Content } = Layout;
-  const { name, roleId, avatar } = JSON.parse(
-    sessionStorage.getItem("info_admin")
-  );
+  const dataAdmin = JSON.parse(localStorage.getItem("info_admin"));
   const handleClickItemMenu = ({ key }) => {
     navigate(key);
   };
@@ -27,7 +17,7 @@ export function DefaultLayoutAdmin(props) {
   };
   const handleClickLogout = () => {
     Cookies.remove("access_token");
-    sessionStorage.removeItem("info_admin");
+    localStorage.removeItem("info_admin");
     navigate("/");
   };
   const getItem = (label, key, icon, children, type) => {
@@ -59,6 +49,11 @@ export function DefaultLayoutAdmin(props) {
           getItem("Quản lí quản trị viên", `/manage/authorization`),
           getItem("Quản lí hiển thị", null, null, [
             getItem("Lỗi nhập dữ liệu", `/manage/error-import`),
+            getItem("Hiển thị trang chủ", `/manage/display-homepage`),
+            getItem(
+              "Ảnh lịch sử phát triển trang chủ",
+              `/manage/slidecard-homepage`
+            ),
             getItem("Tin tức", `/manage/news`),
           ]),
           getItem("Thống kê", `/manage/statistical`),
@@ -67,6 +62,11 @@ export function DefaultLayoutAdmin(props) {
         return [
           getItem("Quản lí hiển thị", null, null, [
             getItem("Lỗi nhập dữ liệu", `/manage/error-import`),
+            getItem("Hiển thị trang chủ", `/manage/display-homepage`),
+            getItem(
+              "Ảnh lịch sử phát triển trang chủ",
+              `/manage/slidecard-homepage`
+            ),
             getItem("Tin tức", `/manage/news`),
           ]),
           getItem("Thống kê", `/manage/statistical`),
@@ -85,7 +85,7 @@ export function DefaultLayoutAdmin(props) {
               style={{ color: "#fff", marginBottom: 0, width: 150 }}
               level={4}
             >
-              {name ?? "Xin chào Admin"}
+              {dataAdmin ? dataAdmin.name : "Xin chào"}
             </Title>
           </div>
           <Menu
@@ -95,7 +95,7 @@ export function DefaultLayoutAdmin(props) {
             theme="dark"
             mode="inline"
             defaultSelectedKeys={[window.location.pathname]}
-            items={menuList(roleId ?? [])}
+            items={menuList(dataAdmin.roleId)}
           />
         </Sider>
         <Layout className="site-layout ml-2">
@@ -120,7 +120,12 @@ export function DefaultLayoutAdmin(props) {
                   shape="circle"
                   size={40}
                   onClick={handleClickAvatar}
-                  src={<img src={avatar ?? ""} alt={"avatar"} />}
+                  src={
+                    <img
+                      src={dataAdmin ? dataAdmin.avatar : ""}
+                      alt={"avatar"}
+                    />
+                  }
                 />
               </Tooltip>
               <Tooltip title="Đăng xuất">

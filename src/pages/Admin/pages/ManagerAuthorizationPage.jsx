@@ -5,15 +5,28 @@ import {
   SearchOutlined,
   SwapOutlined,
   UserAddOutlined,
-} from '@ant-design/icons';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Button, Drawer, Input, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce';
-import { adminAdminApi } from '../../../API/admin/adminAdminApi';
-import { ButtonCustom } from '../../../components/Button';
-import { notificationError, notificationSuccess } from '../../../components/Notification';
+} from "@ant-design/icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  Button,
+  Drawer,
+  Input,
+  Popconfirm,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useDebounce } from "use-debounce";
+import { adminAdminApi } from "../../../API/admin/adminAdminApi";
+import { ButtonCustom } from "../../../components/Button";
+import {
+  notificationError,
+  notificationSuccess,
+} from "../../../components/Notification";
 import {
   deleteAdmin,
   setAdminId,
@@ -21,10 +34,10 @@ import {
   setPageCurrent,
   setPageSize,
   setTotal,
-} from '../../../redux/Admin/adminSilce';
-import { addAdmin } from '../../../redux/Trash/adminTrashSlice';
-import DrawerAdminAuther from '../components/Drawer/DrawerAdminAuther';
-import { ModalFormAdmin, ModalTrashCanAdmin } from '../components/Modal';
+} from "../../../redux/Admin/adminSilce";
+import { addAdmin } from "../../../redux/Trash/adminTrashSlice";
+import { DrawerAdminAuther } from "../components/Drawer";
+import { ModalFormAdmin, ModalTrashCanAdmin } from "../components/Modal";
 
 function ManagerAuthorizationPage(props) {
   const { Title } = Typography;
@@ -39,14 +52,14 @@ function ManagerAuthorizationPage(props) {
   const [dataAdmin, setDataAdmin] = useState({});
   const [openModalTrush, setOpenModalTrush] = useState(false);
   const [required, setRequired] = useState(true);
-  const [valueSearchAdmin, setValueSearchAdmin] = useState('');
+  const [valueSearchAdmin, setValueSearchAdmin] = useState("");
 
   // handle delete admin
   const handleConfirmDeleteAdmin = useMutation({
     mutationFn: async (id) => await adminAdminApi.deleteAdmin(id),
     onSuccess: (data) => {
       if (data && data.success) {
-        notificationSuccess('Xóa thành công');
+        notificationSuccess("Xóa thành công");
         dispatch(deleteAdmin(data.data.admin));
         dispatch(addAdmin(data.data));
       }
@@ -62,7 +75,7 @@ function ManagerAuthorizationPage(props) {
   const getAdminList = useQuery({
     cacheTime: 10 * 60 * 1000,
     keepPreviousData: true,
-    queryKey: ['adminList', pageSize, pageCurrent, adminId],
+    queryKey: ["adminList", pageSize, pageCurrent, adminId],
     queryFn: async () =>
       await adminAdminApi.getAllAdmin({
         id: adminId,
@@ -85,11 +98,11 @@ function ManagerAuthorizationPage(props) {
     setOpenModalFormAdmin(true);
   };
   const role = (roleId) => {
-    if (roleId === 'ADMIN') {
-      return <Tag color='purple'>ADMIN</Tag>;
-    } else if (roleId === 'MOD') {
-      return <Tag color='lime'>MOD</Tag>;
-    } else return <Tag color='red'>SUPERADMIN</Tag>;
+    if (roleId === "ADMIN") {
+      return <Tag color="purple">ADMIN</Tag>;
+    } else if (roleId === "MOD") {
+      return <Tag color="lime">MOD</Tag>;
+    } else return <Tag color="red">SUPERADMIN</Tag>;
   };
   const handleChangePaginationTable = (page, size) => {
     dispatch(setPageSize(size));
@@ -98,42 +111,46 @@ function ManagerAuthorizationPage(props) {
   const handleChangAdminId = (e) => setValueSearchAdmin(e.target.value);
   const columns = [
     {
-      title: 'Tên đăng nhập',
-      dataIndex: 'id',
-      align: 'center',
+      title: "Tên đăng nhập",
+      dataIndex: "id",
+      align: "center",
     },
     {
-      title: 'Tên người dùng',
-      dataIndex: 'name',
-      align: 'center',
+      title: "Tên người dùng",
+      dataIndex: "name",
+      align: "center",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      align: 'center',
+      title: "Email",
+      dataIndex: "email",
+      align: "center",
     },
     {
-      title: 'Vai trò',
-      align: 'center',
+      title: "Vai trò",
+      align: "center",
       render: (e, record, idx) => role(record?.roleId),
     },
     {
-      title: 'Tùy chọn',
-      align: 'center',
+      title: "Tùy chọn",
+      align: "center",
       render: (e, record, index) => (
         <Button.Group key={index}>
-          <ButtonCustom title={'Chỉnh sửa'} icon={<EditOutlined />} handleClick={() => handleClickEdit(record)} />
+          <ButtonCustom
+            title={"Chỉnh sửa"}
+            icon={<EditOutlined />}
+            handleClick={() => handleClickEdit(record)}
+          />
           <Popconfirm
-            title='Bạn có chắc chắn muốn xóa sinh viên này ?'
+            title="Bạn có chắc chắn muốn xóa sinh viên này ?"
             icon={<DeleteOutlined />}
-            okText='Xóa'
-            okType='danger'
+            okText="Xóa"
+            okType="danger"
             onConfirm={() => handleConfirmDeleteAdmin.mutate(record.id)}
           >
             <Button
-              className='flex justify-center items-center text-md shadow-md'
+              className="flex justify-center items-center text-md shadow-md"
               icon={<DeleteOutlined />}
-              type='primary'
+              type="primary"
               danger
               loading={handleConfirmDeleteAdmin.isLoading}
             >
@@ -146,19 +163,23 @@ function ManagerAuthorizationPage(props) {
   ];
   return (
     <div>
-      <div className='flex justify-between mb-3'>
+      <div className="flex justify-between mb-3">
         <Space>
-          <Tooltip title='Tìm kiếm admin'>
+          <Tooltip title="Tìm kiếm admin">
             <Input
-              prefix={<SearchOutlined className='opacity-60 mr-1' />}
-              placeholder='Nhập mã admin'
-              className='shadow-sm w-[230px]'
+              prefix={<SearchOutlined className="opacity-60 mr-1" />}
+              placeholder="Nhập mã admin"
+              className="shadow-sm w-[230px]"
               onChange={handleChangAdminId}
             />
           </Tooltip>
-          <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
+          <ButtonCustom
+            title="Thùng rác"
+            icon={<DeleteFilled />}
+            handleClick={handleClickBtnTrush}
+          />
         </Space>
-        <Title level={3} className='uppercase absolute left-2/4'>
+        <Title level={3} className="uppercase absolute left-2/4">
           Danh sách admin
         </Title>
         <Space>
@@ -167,14 +188,14 @@ function ManagerAuthorizationPage(props) {
             handleClick={() => {
               setOpenDrawer(true);
             }}
-            title={'Phân quyền'}
+            title={"Phân quyền"}
           />
           <ButtonCustom
             icon={<UserAddOutlined />}
             handleClick={() => {
               setOpenModalFormAdmin(true);
             }}
-            title='Thêm admin'
+            title="Thêm admin"
           />
         </Space>
       </div>
@@ -197,7 +218,7 @@ function ManagerAuthorizationPage(props) {
         scroll={{
           y: 630,
         }}
-        rowKey='id'
+        rowKey="id"
         loading={getAdminList.isFetching}
         bordered={true}
         dataSource={adminList}
@@ -211,8 +232,16 @@ function ManagerAuthorizationPage(props) {
           showSizeChanger: true,
         }}
       />
-      <ModalTrashCanAdmin open={openModalTrush} close={() => setOpenModalTrush(false)} />
-      <Drawer placement='right' open={openDrawer} onClose={() => setOpenDrawer(false)} width={1300}>
+      <ModalTrashCanAdmin
+        open={openModalTrush}
+        close={() => setOpenModalTrush(false)}
+      />
+      <Drawer
+        placement="right"
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        width={1300}
+      >
         <DrawerAdminAuther />
       </Drawer>
     </div>
