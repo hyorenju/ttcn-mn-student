@@ -1,3 +1,20 @@
+import { adminDisplayApi } from "@/API/admin/adminDisplayApi";
+import { adminPointApi } from "@/API/admin/adminPointApi";
+import { ButtonCustom } from "@/components/Button";
+import {
+  notificationError,
+  notificationSuccess,
+} from "@/components/Notification";
+import {
+  deletePoint,
+  setDataPointList,
+  setPageCurrent,
+  setPageSize,
+  setStudentId,
+  setTermId,
+  setTotal,
+} from "@/redux/Point/pointSlice";
+import { addPoint } from "@/redux/Trash/pointTrashSilce";
 import {
   DeleteFilled,
   DeleteOutlined,
@@ -21,27 +38,9 @@ import {
   Typography,
   Upload,
 } from "antd";
-import Cookies from "js-cookie";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "use-debounce";
-import { adminDisplayApi } from "../../../API/admin/adminDisplayApi";
-import { adminPointApi } from "../../../API/admin/adminPointApi";
-import { ButtonCustom } from "../../../components/Button";
-import {
-  notificationError,
-  notificationSuccess,
-} from "../../../components/Notification";
-import {
-  deletePoint,
-  setDataPointList,
-  setPageCurrent,
-  setPageSize,
-  setStudentId,
-  setTermId,
-  setTotal,
-} from "../../../redux/Point/pointSlice";
-import { addPoint } from "../../../redux/Trash/pointTrashSilce";
 import {
   ModalFormPoint,
   ModalShowError,
@@ -51,20 +50,13 @@ import { ContentPopoverPoint } from "../components/Popover";
 
 function ManagerTermPointPage() {
   const { Title } = Typography;
-  const token = Cookies.get("access_token");
   const dispatch = useDispatch();
-  const pointList = useSelector((state) => state.pointList.pointList);
-  const studentId = useSelector((state) => state.pointList.studentId);
-  const termId = useSelector((state) => state.pointList.termId);
-  const total = useSelector((state) => state.pointList.total);
-  const pageCurrent = useSelector((state) => state.pointList.pageCurrent);
-  const pageSize = useSelector((state) => state.pointList.pageSize);
-  const valueFilter = useSelector((state) => state.pointList.filer);
+  const { pointList, studentId, termId, total, pageCurrent, pageSize, filter } =
+    useSelector((state) => state.pointList);
   const [disabled, setDisabled] = useState(false);
   const [openModalFormPoint, setOpenModalFormPoint] = useState(false);
   const [openModalTrush, setOpenModalTrush] = useState(false);
   const [openModalError, setOpenModalError] = useState(false);
-  const [loadingBtnImportPoint, setLoadingBtnImportPoint] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [dataPoint, setDataPoint] = useState({});
   const [dataError, setDataError] = useState({});
@@ -85,7 +77,7 @@ function ManagerTermPointPage() {
       termId,
       pageCurrent,
       pageSize,
-      valueFilter,
+      filter,
     ],
     queryFn: async () =>
       await adminPointApi.getAllPoint({
@@ -93,7 +85,7 @@ function ManagerTermPointPage() {
         termId: termId,
         page: pageCurrent,
         size: pageSize,
-        filter: valueFilter,
+        filter: filter,
       }),
     onSuccess: (data) => {
       if (data && data.success === true) {
@@ -101,7 +93,6 @@ function ManagerTermPointPage() {
         dispatch(setTotal(data.data.total));
       }
     },
-    onError: (err) => {},
   });
 
   // Handle click confirm delete major
@@ -113,6 +104,32 @@ function ManagerTermPointPage() {
         notificationSuccess("Xóa thành công");
         dispatch(deletePoint(data.data.point));
         dispatch(addPoint(data.data));
+      } else {
+        notificationError("Xóa thất bại");
+      }
+    },
+  });
+
+  const importFileData = useMutation({
+    mutationKey: ["importFileDataPoint"],
+    mutationFn: async (file) => {
+      const formData = new FormData();
+      formData.append("file", file.file);
+      return await adminPointApi.importPointStudent(formData);
+    },
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        window.open(res.data);
+        notificationSuccess(
+          "Đã xuất file excel thành công hãy kiểm tra trong máy của bạn nhé "
+        );
+      } else if (res && res.success === false) {
+        getDataError.mutate();
+        notificationError(
+          `Upload file thất bại. Hãy làm theo đúng form excel được tải về máy của bạn`
+        );
+        setOpenModalError(true);
+        window.open(res.error?.message);
       }
     },
   });
@@ -124,7 +141,7 @@ function ManagerTermPointPage() {
       await adminPointApi.exportPointStudent({
         studentId: studentId,
         termId: termId,
-        filter: valueFilter,
+        filter: filter,
       }),
     onSuccess: (data) => {
       if (data && data.success === true) {
@@ -132,6 +149,8 @@ function ManagerTermPointPage() {
         notificationSuccess(
           "Đã xuất file excel thành công hãy kiểm tra trong máy của bạn nhé "
         );
+      } else {
+        notificationError("Có lỗi");
       }
     },
   });
@@ -142,9 +161,6 @@ function ManagerTermPointPage() {
       if (res && res.success === true) {
         setDataError(res.data);
       }
-    },
-    onError: (err) => {
-      notificationError(err);
     },
   });
   // ===============================
@@ -184,29 +200,8 @@ function ManagerTermPointPage() {
   const props = {
     name: "file",
     multiple: false,
-    action: `https://student-manager-a9966b285f24.herokuapp.com/point/import`,
     showUploadList: false,
-    headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
-    onChange(info) {
-      const { response, status } = info.file;
-      if (response?.success === true) {
-        notificationSuccess(`Upload ${info.file.name} thành công`);
-      } else if (response?.success === false) {
-        getDataError.mutate();
-        notificationError(
-          `Upload ${info.file.name} thất bại. Hãy làm theo đúng form excel được tải về máy của bạn`
-        );
-        setOpenModalError(true);
-        window.open(response?.error?.message);
-      }
-      if (status === "done") {
-        setLoadingBtnImportPoint(false);
-      } else if (status === "uploading") {
-        setLoadingBtnImportPoint(true);
-      }
-    },
+    customRequest: (file) => importFileData.mutate(file),
     beforeUpload: (file) => {
       const checkSize = file.size / 1024 / 1024 < 5;
       const isXLXS =
@@ -384,16 +379,14 @@ function ManagerTermPointPage() {
             <ButtonCustom
               title={"Thêm danh sách điểm"}
               icon={<UploadOutlined />}
-              loading={loadingBtnImportPoint}
+              loading={importFileData.isLoading}
             />
           </Upload>
-          <Button
+          <ButtonCustom
             icon={<PlusCircleOutlined />}
-            onClick={handleClickAddPointTerm}
-            className="flex justify-center items-center bg-white shadow-lg font-medium"
-          >
-            {"Thêm điểm ( học kì )"}
-          </Button>
+            handleClick={handleClickAddPointTerm}
+            title={"Thêm điểm"}
+          />
         </Space>
       </div>
       <div className="relative">
@@ -425,7 +418,7 @@ function ManagerTermPointPage() {
               loading={exportFileData.isLoading}
               handleClick={handleExportFileData}
               icon={<DownloadOutlined />}
-            ></ButtonCustom>
+            />
           </div>
         )}
       </div>

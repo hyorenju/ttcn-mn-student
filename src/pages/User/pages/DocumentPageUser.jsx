@@ -1,10 +1,10 @@
+import { ButtonCustom } from "@/components/Button";
+import { setOpenModal } from "@/redux/Modal/modalLoginSlice";
 import { PlusOutlined } from "@ant-design/icons";
 import { Pagination } from "antd";
 import Cookies from "js-cookie";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { ButtonCustom } from "../../../components/Button";
-import { setOpenModal } from "../../../redux/Modal/modalLoginSlice";
 import { CardDocs } from "../components/Card";
 import { DefaultLayoutPage } from "../components/Layout/DefaultLayoutPage";
 import { ModalFormDocs } from "../components/ModalForm";

@@ -1,10 +1,13 @@
-import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Space } from 'antd';
-import React from 'react';
-import { adminStatusApi } from '../../../../API/admin/adminStatusApi';
-import { ButtonCustom } from '../../../../components/Button';
-import { notificationError, notificationSuccess } from '../../../../components/Notification';
+import { adminStatusApi } from "@/API/admin/adminStatusApi";
+import { ButtonCustom } from "@/components/Button";
+import {
+  notificationError,
+  notificationSuccess,
+} from "@/components/Notification";
+import { ModalForm, ProForm, ProFormText } from "@ant-design/pro-components";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Space } from "antd";
+import React from "react";
 
 export function ModalFormStatus({ open, onChangeClickOpen, dataStatus }) {
   const queryClient = useQueryClient();
@@ -16,14 +19,14 @@ export function ModalFormStatus({ open, onChangeClickOpen, dataStatus }) {
   };
   // handle create class
   const handleCreateStatus = useMutation({
-    mutationKey: ['createStatus'],
+    mutationKey: ["createStatus"],
     mutationFn: async (values) => adminStatusApi.createStatus(values),
     onSuccess: (res) => {
       if (res && res.success === true) {
         queryClient.invalidateQueries({
-          queryKey: ['listStatus'],
+          queryKey: ["listStatus"],
         });
-        notificationSuccess('Tạo trạng thái thành công');
+        notificationSuccess("Tạo trạng thái thành công");
         onChangeClickOpen(false);
       }
     },
@@ -34,15 +37,17 @@ export function ModalFormStatus({ open, onChangeClickOpen, dataStatus }) {
 
   // handle update class
   const handleUpdateStatus = useMutation({
-    mutationKey: ['updateStatus'],
+    mutationKey: ["updateStatus"],
     mutationFn: async (id, values) => adminStatusApi.createStatus(id, values),
     onSuccess: (res) => {
       if (res && res.success === true) {
         queryClient.invalidateQueries({
-          queryKey: ['listStatus'],
+          queryKey: ["listStatus"],
         });
-        notificationSuccess('Cập nhật trạng thái thành công');
+        notificationSuccess("Cập nhật trạng thái thành công");
         onChangeClickOpen(false);
+      } else {
+        notificationError(res.error?.message);
       }
     },
     onError: (error) => {
@@ -53,7 +58,9 @@ export function ModalFormStatus({ open, onChangeClickOpen, dataStatus }) {
     <div>
       <ModalForm
         width={750}
-        title={dataStatus.id ? 'Cập nhật thông tin trạng thái' : 'Thêm trạng thái'}
+        title={
+          dataStatus.id ? "Cập nhật thông tin trạng thái" : "Thêm trạng thái"
+        }
         initialValues={dataStatus}
         modalProps={{
           destroyOnClose: true,
@@ -63,11 +70,11 @@ export function ModalFormStatus({ open, onChangeClickOpen, dataStatus }) {
           render: (props) => [
             <Space>
               <ButtonCustom
-                type='primary'
+                type="primary"
                 handleClick={() => handleClickSubmit(props)}
-                title={dataStatus.id ? 'Cập nhật' : 'Tạo mới'}
+                title={dataStatus.id ? "Cập nhật" : "Tạo mới"}
               />
-              <ButtonCustom title='Hủy' handleClick={handleClickCancel} />
+              <ButtonCustom title="Hủy" handleClick={handleClickCancel} />
             </Space>,
           ],
         }}
@@ -83,11 +90,11 @@ export function ModalFormStatus({ open, onChangeClickOpen, dataStatus }) {
       >
         <ProForm.Group>
           <ProFormText
-            rules={[{ required: true, message: 'Không thể để trống' }]}
-            width='md'
-            name='name'
-            label='Tên trạng thái'
-            placeholder='Nhập tên trạng thái'
+            rules={[{ required: true, message: "Không thể để trống" }]}
+            width="md"
+            name="name"
+            label="Tên trạng thái"
+            placeholder="Nhập tên trạng thái"
           />
         </ProForm.Group>
       </ModalForm>

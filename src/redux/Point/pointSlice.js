@@ -7,7 +7,7 @@ const initialState = {
   total: 0,
   pageCurrent: 1,
   pageSize: 10,
-  filer: {},
+  filter: {},
 };
 
 const pointSlice = createSlice({
@@ -21,7 +21,7 @@ const pointSlice = createSlice({
       state.studentId = action.payload;
     },
     setFilter: (state, action) => {
-      state.filer = action.payload;
+      state.filter = action.payload;
     },
     setDataPointList: (state, action) => {
       state.pointList = action.payload;

@@ -1,12 +1,12 @@
+import Rectangle from "@/assets/img/Rectangle.png";
+import sodophonghoc from "@/assets/img/sodophonghoc.png";
+import "@/assets/styles/swiperCard.css";
 import { Image } from "antd";
 import React from "react";
 import "swiper/css";
 import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Rectangle from "../../../assets/img/Rectangle.png";
-import sodophonghoc from "../../../assets/img/sodophonghoc.png";
-import "../../../assets/styles/swiperCard.css";
 import { DefaultLayoutPage } from "../components/Layout/DefaultLayoutPage";
 import { SlideShowHeader } from "../components/Slider";
 

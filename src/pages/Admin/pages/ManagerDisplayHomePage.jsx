@@ -1,10 +1,10 @@
+import { adminDisplayApi } from "@/API/admin/adminDisplayApi";
+import { ButtonCustom } from "@/components/Button";
 import { EditOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Image, Table, Typography } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { adminDisplayApi } from "../../../API/admin/adminDisplayApi";
-import { ButtonCustom } from "../../../components/Button";
 import { ModalFormErrorImport } from "../components/Modal";
 
 function ManagerDisplayHomePage() {

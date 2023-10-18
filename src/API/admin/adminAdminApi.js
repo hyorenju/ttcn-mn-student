@@ -82,4 +82,13 @@ export const adminAdminApi = {
       throw new Error(error);
     }
   },
+  changePassword: async (values) => {
+    try {
+      const url = `/admin/admin/change-password`;
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };

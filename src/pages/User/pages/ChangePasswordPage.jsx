@@ -1,14 +1,14 @@
+import { visitor } from "@/API/Visistor/visitor";
+import ErrorPage from "@/components/Error/ErrorPage";
+import {
+  notificationError,
+  notificationSuccess,
+} from "@/components/Notification";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Avatar, Button, Form, Input } from "antd";
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { visitor } from "../../../API/Visistor/visitor";
-import ErrorPage from "../../../components/Error/ErrorPage";
-import {
-  notificationError,
-  notificationSuccess,
-} from "../../../components/Notification";
 
 function ChangePasswordPage(props) {
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ function ChangePasswordPage(props) {
         </div>
       )}
       {data?.success === false && <ErrorPage />}
-      {data?.success === false && notificationError(data.error.message)}
+      {data?.success === false && notificationError("Hết hạn truy cập")}
     </div>
   );
 }

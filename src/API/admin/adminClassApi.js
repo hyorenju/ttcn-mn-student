@@ -1,8 +1,8 @@
-import instane from '../instane';
+import instane from "../instane";
 
 export const adminClassApi = {
   getAllClass: async (values) => {
-    const url = '/admin/class/list';
+    const url = "/admin/class/list";
     try {
       const res = await instane.post(url, values);
       return res.data;
@@ -11,7 +11,7 @@ export const adminClassApi = {
     }
   },
   createClass: async (values) => {
-    const url = '/admin/class/create';
+    const url = "/admin/class/create";
     try {
       const res = await instane.post(url, values);
       return res.data;
@@ -19,10 +19,10 @@ export const adminClassApi = {
       throw new Error(error);
     }
   },
-  updateClass: async (id, values) => {
-    const url = `/admin/class/update/${id}`;
+  updateClass: async (values) => {
+    const url = `/admin/class/update`;
     try {
-      const res = await instane.put(url, values);
+      const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
       throw new Error(error);
@@ -31,7 +31,7 @@ export const adminClassApi = {
   deleteClass: async (id) => {
     const url = `/admin/class/delete/${id}`;
     try {
-      const res = await instane.put(url);
+      const res = await instane.post(url);
       return res.data;
     } catch (error) {
       throw new Error(error);

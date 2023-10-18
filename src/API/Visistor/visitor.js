@@ -14,19 +14,6 @@ export const visitor = {
       throw new Error(error);
     }
   },
-  changePassword: async (values) => {
-    const url = "/visitor/change-password";
-    try {
-      const res = await instane.post(url, values, {
-        headers: {
-          Authorization: undefined,
-        },
-      });
-      return res.data;
-    } catch (error) {
-      throw new Error(error);
-    }
-  },
   checkTokenChangePassword: async (values) => {
     const url = "/visitor/check-token";
     try {

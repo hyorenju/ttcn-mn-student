@@ -1,3 +1,18 @@
+import { adminAdminApi } from "@/API/admin/adminAdminApi";
+import { ButtonCustom } from "@/components/Button";
+import {
+  notificationError,
+  notificationSuccess,
+} from "@/components/Notification";
+import {
+  deleteAdmin,
+  setAdminId,
+  setDataAdminList,
+  setPageCurrent,
+  setPageSize,
+  setTotal,
+} from "@/redux/Admin/adminSilce";
+import { addAdmin } from "@/redux/Trash/adminTrashSlice";
 import {
   DeleteFilled,
   DeleteOutlined,
@@ -21,32 +36,15 @@ import {
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "use-debounce";
-import { adminAdminApi } from "../../../API/admin/adminAdminApi";
-import { ButtonCustom } from "../../../components/Button";
-import {
-  notificationError,
-  notificationSuccess,
-} from "../../../components/Notification";
-import {
-  deleteAdmin,
-  setAdminId,
-  setDataAdminList,
-  setPageCurrent,
-  setPageSize,
-  setTotal,
-} from "../../../redux/Admin/adminSilce";
-import { addAdmin } from "../../../redux/Trash/adminTrashSlice";
 import { DrawerAdminAuther } from "../components/Drawer";
 import { ModalFormAdmin, ModalTrashCanAdmin } from "../components/Modal";
 
 function ManagerAuthorizationPage(props) {
   const { Title } = Typography;
   const dispatch = useDispatch();
-  const adminList = useSelector((state) => state.adminList.adminList);
-  const total = useSelector((state) => state.adminList.total);
-  const pageCurrent = useSelector((state) => state.adminList.pageCurrent);
-  const adminId = useSelector((state) => state.adminList.adminId);
-  const pageSize = useSelector((state) => state.adminList.pageSize);
+  const { adminList, adminId, total, pageCurrent, pageSize } = useSelector(
+    (state) => state.adminList
+  );
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openModalFormAdmin, setOpenModalFormAdmin] = useState(false);
   const [dataAdmin, setDataAdmin] = useState({});

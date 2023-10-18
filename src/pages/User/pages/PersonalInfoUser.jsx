@@ -1,44 +1,58 @@
-import {
-  AreaChartOutlined,
-  FileImageOutlined,
-  PhoneOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Avatar, Drawer, Space, Upload } from "antd";
-import Cookies from "js-cookie";
-import React, { useState } from "react";
-import { adminStatistic } from "../../../API/admin/adminStatistic";
-import { ButtonCustom } from "../../../components/Button";
+import { studentApi } from "@/API/Student";
+import { ButtonCustom } from "@/components/Button";
 import {
   notificationError,
   notificationSuccess,
-} from "../../../components/Notification";
+} from "@/components/Notification";
+import {
+  AreaChartOutlined,
+  FileImageOutlined,
+  LockOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Avatar, Drawer, Space, Upload } from "antd";
+import React, { useState } from "react";
 import { ChartColumnBasic, ChartLiquid } from "../../Admin/components/Chart";
 import { FormInfoUser } from "../components/Form/FormInfoUser";
 import { DefaultLayoutPage } from "../components/Layout/DefaultLayoutPage";
-import { ModalEditPhoneNumber } from "../components/ModalForm";
+import { ModalChangePassword } from "../components/ModalForm";
 
 function PersonalInfoUser() {
   const dataStudentLocal = JSON.parse(localStorage.getItem("info_student"));
-  const [openModalFormPhoneNumber, setOpenModalFormPhoneNumber] =
-    useState(false);
   const [openDrawerPoint, setOpenDrawerPoint] = useState(false);
-  const [loadingBtnUpload, setLoadingBtnUpload] = useState(false);
-  const token = Cookies.get("access_token");
+  const [openModalFormChangePassword, setOpenModalFormChangePassword] =
+    useState(false);
+
   const { data } = useQuery({
+    staleTime: 10 * 60 * 1000,
+    cacheTime: 15 * 60 * 1000,
     queryKey: ["getDataPoint"],
-    queryFn: async () =>
-      await adminStatistic.getDataPoint(dataStudentLocal?.id),
+    queryFn: async () => await studentApi.statistic(),
   });
+
+  const handleUploadAvatar = useMutation({
+    mutationKey: ["uploadAvatarUser"],
+    mutationFn: async (file) => {
+      const fileFormData = new FormData();
+      fileFormData.append("file", file.file);
+      return await studentApi.updateAvatar(fileFormData);
+    },
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        localStorage.setItem("info_student", JSON.stringify(res.data));
+        notificationSuccess(`Upload file thành công`);
+      } else {
+        notificationError(`Upload file thất bại`);
+      }
+    },
+  });
+
   const props = {
     name: "file",
     multiple: false,
-    action: `https://student-manager-a9966b285f24.herokuapp.com/student/avatar`,
     showUploadList: false,
-    headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
+    customRequest: (file) => handleUploadAvatar.mutate(file),
     beforeUpload: (file) => {
       const isSize = file.size / 1024 / 1024 < 2;
       const isPNG = file.type === "image/jpeg" || "image/png";
@@ -52,28 +66,15 @@ function PersonalInfoUser() {
       }
       return true;
     },
-    onChange(info) {
-      const { response, status } = info.file;
-      if (response && response?.success === true) {
-        localStorage.setItem("info_student", JSON.stringify(response.data));
-        notificationSuccess(`Upload ${info.file.name} thành công`);
-      } else if (response?.success === false) {
-        notificationError(`Upload ${info.file.name} thất bại`);
-      }
-      if (status === "done") {
-        setLoadingBtnUpload(false);
-      } else if (status === "uploading") {
-        setLoadingBtnUpload(true);
-      }
-    },
   };
+  
   const handleOpenChange = (open) => {
     if (!open) {
-      setOpenModalFormPhoneNumber(false);
+      setOpenModalFormChangePassword(false);
     }
   };
   const handleClickUpdatePhoneNumber = () => {
-    setOpenModalFormPhoneNumber(true);
+    setOpenModalFormChangePassword(true);
   };
   const handleClickShowPoint = () => {
     setOpenDrawerPoint(true);
@@ -105,14 +106,14 @@ function PersonalInfoUser() {
                 <Space direction="vertical" size={20}>
                   <Upload {...props}>
                     <ButtonCustom
-                      loading={loadingBtnUpload}
+                      loading={handleUploadAvatar.isLoading}
                       title="Đổi ảnh đại diện"
                       icon={<FileImageOutlined />}
                     />
                   </Upload>
                   <ButtonCustom
-                    title="Cập nhật số điện thoại"
-                    icon={<PhoneOutlined />}
+                    title="Đổi mật khẩu"
+                    icon={<LockOutlined />}
                     handleClick={handleClickUpdatePhoneNumber}
                   />
                   <ButtonCustom
@@ -128,8 +129,8 @@ function PersonalInfoUser() {
             </div>
           </div>
         </section>
-        <ModalEditPhoneNumber
-          open={openModalFormPhoneNumber}
+        <ModalChangePassword
+          open={openModalFormChangePassword}
           onOpenChange={handleOpenChange}
         />
       </DefaultLayoutPage>
@@ -145,7 +146,7 @@ function PersonalInfoUser() {
             <div className="flex gap-20 w-[70vw] mb-20">
               <div className="flex-1">
                 <figure>
-                  <ChartColumnBasic data={data.data.avgPoint4List} />
+                  <ChartColumnBasic data={data.data?.avgPoint4List} />
                 </figure>
                 <figcaption className="text-center italic mt-4">
                   Điểm học tập hệ 4
@@ -153,7 +154,7 @@ function PersonalInfoUser() {
               </div>
               <div className="flex-1">
                 <figure>
-                  <ChartColumnBasic data={data.data.avgPoint10List} />
+                  <ChartColumnBasic data={data.data?.avgPoint10List} />
                 </figure>
                 <figcaption className="text-center italic mt-4">
                   Điểm học tập hệ 10
@@ -163,7 +164,7 @@ function PersonalInfoUser() {
             <div className="flex gap-20 w-[70vw]">
               <div className="flex-1">
                 <figure>
-                  <ChartColumnBasic data={data.data.trainingPointList} />
+                  <ChartColumnBasic data={data.data?.trainingPointList} />
                 </figure>
                 <figcaption className="text-center italic mt-4">
                   Điểm rèn luyện

@@ -1,40 +1,69 @@
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { Button, Input, Popconfirm, Space, Table, Tooltip, Typography } from 'antd';
-import React, { useState } from 'react';
-import { useDebounce } from 'use-debounce';
-import { adminClassApi } from '../../../API/admin/adminClassApi';
-import { deleteClass } from '../../../API/axios';
-import { ButtonCustom } from '../../../components/Button/ButtonCustom';
-import { notificationSuccess } from '../../../components/Notification';
-import { ModalFormClass } from '../components/Modal';
+import { adminClassApi } from "@/API/admin/adminClassApi";
+import { ButtonCustom } from "@/components/Button";
+import {
+  notificationError,
+  notificationSuccess,
+} from "@/components/Notification";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Button,
+  Input,
+  Popconfirm,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
+} from "antd";
+import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useDebounce } from "use-debounce";
+import { ModalFormClass } from "../components/Modal";
 
 function ManagerClassPage(props) {
+  const queryClient = useQueryClient();
   const { Title } = Typography;
   const [openModalForm, setOpenModalForm] = useState(false);
   const [dataClass, setDataClass] = useState({});
-  const [valueSearchClass, setValueSearchClass] = useState('');
+  const [valueSearchClass, setValueSearchClass] = useSearchParams("");
   const [pageCurrent, setPageCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [disabledClass, setDisabledClass] = useState(false);
-  const [classId] = useDebounce(valueSearchClass, 750);
+  const [classId] = useDebounce(valueSearchClass.get("classId"), 750);
 
   const { data, isLoading } = useQuery({
     staleTime: 60 * 5000,
     cacheTime: 5 * 60 * 5000,
     keepPreviousData: true,
-    queryKey: ['classList', pageCurrent, classId, pageSize],
-    queryFn: async () => await adminClassApi.getAllClass({ id: classId, page: pageCurrent, size: pageSize }),
+    queryKey: ["classList", pageCurrent, classId, pageSize],
+    queryFn: async () =>
+      await adminClassApi.getAllClass({
+        id: classId,
+        page: pageCurrent,
+        size: pageSize,
+      }),
   });
   // Handle Confirm Delete Class
-  const handleConfirmDeleteClass = (id) => {
-    deleteClass(id).then((res) => {
-      if (res.data?.success === true) {
-        // handleGetClassList();
-        notificationSuccess(`Xóa lớp ${id} thành công`);
+  const handleConfirmDeleteClass = useMutation({
+    mutationKey: ["deleteClass"],
+    mutationFn: async (id) => await adminClassApi.deleteClass(id),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        notificationSuccess("Xóa thành công");
+        queryClient.invalidateQueries({
+          queryKey: ["classList", pageCurrent, classId, pageSize],
+          exact: true,
+        });
+      } else {
+        notificationError(res.error?.message);
       }
-    });
-  };
+    },
+  });
 
   const handleClickAddClass = () => setOpenModalForm(true);
   const handleClickEditClass = (record) => {
@@ -42,34 +71,50 @@ function ManagerClassPage(props) {
     setOpenModalForm(true);
     setDataClass(record);
   };
-
+  const handleSearchClassId = (e) => {
+    const classId = e.target.value;
+    if (classId) {
+      setValueSearchClass({ classId });
+    } else {
+      setValueSearchClass({});
+    }
+    setPageCurrent(1);
+  };
+  const handleChangePaginationTable = (page, size) => {
+    setPageCurrent(page);
+    setPageSize(size);
+  };
   const columns = [
     {
-      title: 'Mã lớp',
-      align: 'center',
-      dataIndex: 'id',
+      title: "Mã lớp",
+      align: "center",
+      dataIndex: "id",
     },
     {
-      title: 'Tên lớp',
-      dataIndex: 'name',
+      title: "Tên lớp",
+      dataIndex: "name",
     },
     {
-      title: 'Tùy chọn',
-      align: 'center',
+      title: "Tùy chọn",
+      align: "center",
       render: (e, record, index) => (
         <Button.Group key={index}>
-          <ButtonCustom icon={<EditOutlined />} title={'Chỉnh sửa'} handleClick={() => handleClickEditClass(record)} />
+          <ButtonCustom
+            icon={<EditOutlined />}
+            title={"Chỉnh sửa"}
+            handleClick={() => handleClickEditClass(record)}
+          />
           <Popconfirm
-            title='Bạn có chắc chắn muốn xóa lớp này ?'
+            title="Bạn có chắc chắn muốn xóa lớp này ?"
             icon={<DeleteOutlined />}
-            okText='Xóa'
-            okType='danger'
-            onConfirm={() => handleConfirmDeleteClass(record.id)}
+            okText="Xóa"
+            okType="danger"
+            onConfirm={() => handleConfirmDeleteClass.mutate(record.id)}
           >
             <Button
-              className='flex justify-center items-center text-md shadow-md'
+              className="flex justify-center items-center text-md shadow-md"
               danger
-              type='primary'
+              type="primary"
               icon={<DeleteOutlined />}
             >
               Xóa
@@ -81,47 +126,45 @@ function ManagerClassPage(props) {
   ];
   return (
     <div>
-      <div className='flex justify-between items-center mb-3'>
+      <div className="flex justify-between items-center mb-3">
         <Space>
-          <Tooltip title='Tìm kiếm lớp'>
+          <Tooltip title="Tìm kiếm lớp">
             <Input
-              prefix={<SearchOutlined className='opacity-60 mr-1' />}
-              placeholder='Nhập mã lớp'
-              className='shadow-sm w-[230px]'
-              onChange={(e) => setValueSearchClass(e.target.value)}
-              value={valueSearchClass}
+              prefix={<SearchOutlined className="opacity-60 mr-1" />}
+              placeholder="Nhập mã lớp"
+              className="shadow-sm w-[230px]"
+              onChange={handleSearchClassId}
+              value={valueSearchClass.get("classId")}
             />
           </Tooltip>
         </Space>
         <Title
           level={3}
           style={{
-            textTransform: 'uppercase',
+            textTransform: "uppercase",
             marginBottom: 0,
             marginRight: 100,
           }}
         >
           Danh sách các lớp trong khoa
         </Title>
-        <ButtonCustom title='Thêm lớp' icon={<PlusCircleOutlined />} handleClick={handleClickAddClass}></ButtonCustom>
+        <ButtonCustom
+          title="Thêm lớp"
+          icon={<PlusCircleOutlined />}
+          handleClick={handleClickAddClass}
+        />
       </div>
       <Table
         scroll={{
           y: 630,
         }}
-        rowKey='id'
+        rowKey="id"
         bordered={true}
         loading={isLoading}
         columns={columns}
-        rowSelection={{
-          onChange: () => {},
-        }}
         dataSource={data?.data?.items}
         pagination={{
-          onChange: (page, size) => {
-            setPageCurrent(page);
-            setPageSize(size);
-          },
+          onChange: handleChangePaginationTable,
           defaultCurrent: 1,
           pageSize: pageSize,
           total: data?.data?.total,
@@ -130,9 +173,6 @@ function ManagerClassPage(props) {
         }}
       />
       <ModalFormClass
-        onSuccess={() => {
-          setOpenModalForm(false);
-        }}
         dataClass={dataClass}
         openModalForm={openModalForm}
         onChangeClickOpen={(open) => {

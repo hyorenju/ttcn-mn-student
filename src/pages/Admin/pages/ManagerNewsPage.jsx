@@ -1,9 +1,9 @@
+import { adminDisplayApi } from '@/API/admin/adminDisplayApi';
+import { ButtonCustom } from '@/components/Button';
 import { EditOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Image, Space, Table, Typography } from 'antd';
 import React, { useState } from 'react';
-import { adminDisplayApi } from '../../../API/admin/adminDisplayApi';
-import { ButtonCustom } from '../../../components/Button';
 import { ModalFormNews } from '../components/Modal';
 
 function ManagerNewsPage() {

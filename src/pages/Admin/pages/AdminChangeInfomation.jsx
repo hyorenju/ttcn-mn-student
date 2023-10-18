@@ -1,43 +1,37 @@
-import { UploadOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Typography, Upload, notification } from "antd";
-import Cookies from "js-cookie";
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { updateInfoAdmin } from "../../../API/axios";
-import { ButtonCustom } from "../../../components/Button";
+import { adminAdminApi } from "@/API/admin/adminAdminApi";
+import { ButtonCustom } from "@/components/Button";
 import {
   notificationError,
   notificationSuccess,
-} from "../../../components/Notification";
+} from "@/components/Notification";
+import { UploadOutlined } from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
+import { Button, Form, Input, Typography, Upload } from "antd";
+import Cookies from "js-cookie";
+import React, { useState } from "react";
 import { ModalChangePassword } from "../components/Modal";
 
 function AdminChangeInfomation() {
   const [loadingBtnUpload, setLoadingBtnUpload] = useState(false);
   const dataAdmin = JSON.parse(localStorage.getItem("info_admin"));
-  const { roleId } = useParams();
   const [form] = Form.useForm();
   const { Title } = Typography;
-  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const jwt = Cookies.get("access_token");
 
+  const handleEditProfile = useMutation({
+    mutationKey: ["editProfile"],
+    mutationFn: async (values) => await adminAdminApi.editProfile(values),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        notificationSuccess("Cập nhật thành công");
+      } else {
+        notificationError("Cập nhật thất bại");
+      }
+    },
+  });
   const onFinish = (values) => {
-    setLoading(true);
-    if (roleId !== undefined) {
-      setLoading(true);
-      updateInfoAdmin({ id: roleId, info: values })
-        .then((res) => {
-          if (res.data?.success === true) {
-            notification.success({
-              message: "Thành công",
-              description: "Cập nhật thành công",
-              duration: 3,
-            });
-            setLoading(false);
-          }
-        })
-        .finally(() => setLoading(false));
-    }
+    handleEditProfile.mutate(values);
   };
 
   const props = {
@@ -113,7 +107,7 @@ function AdminChangeInfomation() {
               <Upload {...props}>
                 <ButtonCustom
                   loading={loadingBtnUpload}
-                  title={"Cập nhật ảnh đại diện"}
+                  title={"Tải ảnh lên"}
                   icon={<UploadOutlined />}
                 />
               </Upload>
@@ -129,7 +123,7 @@ function AdminChangeInfomation() {
               <Button
                 type="primary"
                 htmlType="submit"
-                loading={loading}
+                loading={handleEditProfile.isLoading}
                 className="mb-0 w-[150px] flex justify-center items-center"
               >
                 Cập nhật

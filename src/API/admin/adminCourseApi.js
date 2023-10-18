@@ -1,4 +1,4 @@
-import instane from '../instane';
+import instane from "../instane";
 
 export const adminCourseApi = {
   getAllCourse: async (values) => {
@@ -19,10 +19,10 @@ export const adminCourseApi = {
       throw new Error(error);
     }
   },
-  updateCourse: async (id, values) => {
-    const url = `/admin/course/update/${id}`;
+  updateCourse: async (values) => {
+    const url = `/admin/course/update`;
     try {
-      const res = await instane.put(url, values);
+      const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
       throw new Error(error);
@@ -31,7 +31,7 @@ export const adminCourseApi = {
   deleteCourse: async (id) => {
     const url = `/admin/course/delete/${id}`;
     try {
-      const res = await instane.delete(url);
+      const res = await instane.post(url);
       return res.data;
     } catch (error) {
       throw new Error(error);

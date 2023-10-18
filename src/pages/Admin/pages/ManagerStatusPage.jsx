@@ -1,3 +1,5 @@
+import { adminStudentStatusApi } from "@/API/admin/adminStudentStatusApi";
+import { ButtonCustom } from "@/components/Button";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -19,11 +21,10 @@ import {
   Typography,
 } from "antd";
 import { useState } from "react";
-import { adminStudentStatusApi } from "../../../API/admin/adminStudentStatusApi";
-import { ButtonCustom } from "../../../components/Button";
+import { useSearchParams } from "react-router-dom";
+import { useDebounce } from "use-debounce";
 import { ModalFormStudentStatus } from "../components/Modal";
 import { TableListStatus } from "../components/Table";
-import { useDebounce } from "use-debounce";
 
 function ManagerStatusPage(props) {
   const { Title } = Typography;
@@ -32,8 +33,8 @@ function ManagerStatusPage(props) {
   const [openModal, setOpenModal] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [dataStudent, setDataStudent] = useState({});
-  const [studentId, setStudentId] = useState("");
-  const [id] = useDebounce(studentId, 600);
+  const [valueSearchParams, setValueSearchParams] = useSearchParams("");
+  const [id] = useDebounce(valueSearchParams.get("studentId"), 600);
 
   const { data, isFetching } = useQuery({
     staleTime: 60 * 5000,
@@ -51,7 +52,6 @@ function ManagerStatusPage(props) {
     setPageCurrent(page);
     setPageSize(size);
   };
-  const handleChangeRowSelection = () => {};
   const handleClickBtnEditStatusStudent = (record) => {
     setOpenModal(true);
     setDataStudent(record);
@@ -64,7 +64,13 @@ function ManagerStatusPage(props) {
     setOpenModal(true);
   };
   const handleChangeStudentId = (e) => {
-    setStudentId(e.target.value);
+    const studentId = e.target.value;
+    if (studentId) {
+      setValueSearchParams({ studentId });
+      setPageCurrent(1);
+    } else {
+      setValueSearchParams({});
+    }
   };
   const columns = [
     {
@@ -181,9 +187,6 @@ function ManagerStatusPage(props) {
           loading={isFetching}
           scroll={{
             y: 630,
-          }}
-          rowSelection={{
-            onChange: handleChangeRowSelection,
           }}
           bordered={true}
           dataSource={data?.data?.items}

@@ -15,13 +15,13 @@ export function ModalFormConfirmEmail({ open, onOpenChange }) {
     mutationFn: async (values) =>
       await visitor.sendRequestChangePassword({
         link: "https://vnua-student-fita.web.app/changepassword",
-        student: values,
+        user: values,
       }),
     onSuccess: (res) => {
       if (res && res.success === true) {
         notificationSuccess(res.data);
       } else if (res && res.success === false) {
-        notificationError(res.error.message);
+        notificationError(res.error?.message);
       }
     },
   });
@@ -37,7 +37,7 @@ export function ModalFormConfirmEmail({ open, onOpenChange }) {
   return (
     <div>
       <ModalForm
-        width={400}
+        width={370}
         open={open}
         onOpenChange={onOpenChange}
         title="Xác thực tài khoản"

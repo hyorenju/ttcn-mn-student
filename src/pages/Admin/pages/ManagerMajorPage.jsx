@@ -1,11 +1,18 @@
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined, ReloadOutlined } from '@ant-design/icons';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Popconfirm, Table, Typography } from 'antd';
-import React, { useState } from 'react';
-import { adminMajorApi } from '../../../API/admin/adminMajorApi';
-import { ButtonCustom } from '../../../components/Button';
-import { notificationError, notificationSuccess } from '../../../components/Notification';
-import { ModalFormMajor } from '../components/Modal';
+import { adminMajorApi } from "@/API/admin/adminMajorApi";
+import { ButtonCustom } from "@/components/Button";
+import {
+  notificationError,
+  notificationSuccess,
+} from "@/components/Notification";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Popconfirm, Table, Typography } from "antd";
+import React, { useState } from "react";
+import { ModalFormMajor } from "../components/Modal";
 
 function ManagerMajorPage(props) {
   const { Title } = Typography;
@@ -15,12 +22,13 @@ function ManagerMajorPage(props) {
   const queryClient = useQueryClient();
 
   // handle get data major
-  const { data, isLoading, error } = useQuery({
+  const { data, isFetching, error } = useQuery({
     staleTime: 60 * 5000,
     cacheTime: 5 * 60 * 5000,
     keepPreviousData: true,
-    queryKey: ['majorList', pageCurrent],
-    queryFn: async () => await adminMajorApi.getAllMajor({ page: pageCurrent, size: 10 }),
+    queryKey: ["majorList", pageCurrent],
+    queryFn: async () =>
+      await adminMajorApi.getAllMajor({ page: pageCurrent, size: 10 }),
   });
   if (error) {
     notificationError(error?.data?.data);
@@ -34,20 +42,23 @@ function ManagerMajorPage(props) {
     setOpenModalFormMajor(true);
     setDataMajor(record);
   };
+  const handleChangePagination = (page, size) => {
+    setPageCurrent(page);
+  };
   // handle confirm delete major
   const confirmDeleteMajor = useMutation({
-    mutationKey: ['deleteMajor'],
+    mutationKey: ["deleteMajor"],
     mutationFn: async (id) => await adminMajorApi.deleteMajor(id),
-    onSuccess: (data) => {
-      if (data && data.success === true) {
-        queryClient.invalidateQueries({
-          queryKey: ['majorList', pageCurrent],
+    onSuccess: async (res) => {
+      if (res && res.success === true) {
+        await queryClient.invalidateQueries({
+          queryKey: ["majorList", pageCurrent],
+          exact: true,
         });
-        notificationSuccess(data?.data?.data);
+        notificationSuccess(res?.data?.data);
+      } else {
+        notificationError(res.error?.message);
       }
-    },
-    onError: (data) => {
-      notificationError(data?.data?.data);
     },
   });
   const handleConfirmDeleteMajor = (id) => {
@@ -56,39 +67,43 @@ function ManagerMajorPage(props) {
 
   const columns = [
     {
-      title: 'Mã chuyên ngành',
-      dataIndex: 'id',
-      key: 'id',
-      align: 'center',
+      title: "Mã chuyên ngành",
+      dataIndex: "id",
+      key: "id",
+      align: "center",
     },
     {
-      title: 'Tên chuyên ngành',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Tên chuyên ngành",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Tổng số tín chỉ tích lũy',
-      dataIndex: 'totalCredits',
-      key: 'totalCredits',
-      align: 'center',
+      title: "Tổng số tín chỉ tích lũy",
+      dataIndex: "totalCredits",
+      key: "totalCredits",
+      align: "center",
     },
     {
-      title: 'Tùy chọn',
-      align: 'center',
+      title: "Tùy chọn",
+      align: "center",
       render: (e, record, idx) => (
         <Button.Group key={idx}>
-          <ButtonCustom handleClick={() => handleClickEditMajor(record)} icon={<EditOutlined />} title={'Chỉnh sửa'} />
+          <ButtonCustom
+            handleClick={() => handleClickEditMajor(record)}
+            icon={<EditOutlined />}
+            title={"Chỉnh sửa"}
+          />
           <Popconfirm
             title={`Bạn có chắc chắn muốn xóa chuyên ngành ${record.id}`}
             icon={<DeleteOutlined />}
-            okText='Xóa'
-            okType='danger'
+            okText="Xóa"
+            okType="danger"
             onConfirm={() => handleConfirmDeleteMajor(record.id)}
           >
             <Button
-              className='flex justify-center items-center text-md shadow-md'
+              className="flex justify-center items-center text-md shadow-md"
               danger
-              type='primary'
+              type="primary"
               icon={<DeleteOutlined />}
             >
               Xóa
@@ -100,41 +115,34 @@ function ManagerMajorPage(props) {
   ];
   return (
     <div>
-      <div className='flex justify-between items-center mb-3'>
-        <Button
-          type='default'
-          icon={<ReloadOutlined />}
-          onClick={() => {
-            setPageCurrent(1);
+      <div className="flex justify-between items-center mb-3">
+        <div></div>
+        <Title
+          style={{
+            textAlign: "center",
+            textTransform: "uppercase",
+            marginBottom: 0,
           }}
-          className='flex justify-center items-center bg-white shadow-lg font-medium'
+          level={3}
         >
-          Cập nhật
-        </Button>
-        <Title style={{ textAlign: 'center', textTransform: 'uppercase', marginBottom: 0 }} level={3}>
-          Danh sách chuyên ngành
+          Danh sách ngành
         </Title>
-        <Button
+        <ButtonCustom
           icon={<PlusCircleOutlined />}
-          onClick={handleClickAddMajor}
-          className='flex justify-center items-center bg-white shadow-lg font-medium'
-        >
-          Thêm chuyên ngành
-        </Button>
+          handleClick={handleClickAddMajor}
+          title={"Thêm ngành"}
+        />
       </div>
       <Table
         scroll={{
           y: 630,
         }}
-        rowKey='uid'
-        loading={isLoading}
+        loading={isFetching}
         bordered={true}
         dataSource={data?.data?.items}
         columns={columns}
         pagination={{
-          onChange: (page, size) => {
-            setPageCurrent(page);
-          },
+          onChange: handleChangePagination,
           defaultCurrent: 1,
           pageSize: 10,
           total: data?.data?.total,

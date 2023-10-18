@@ -1,6 +1,6 @@
+import AdminPage from '@/assets/img/Logo/AdminPage.svg';
 import { Image, Result } from 'antd';
 import React from 'react';
-import AdminPage from '../../../assets/img/Logo/AdminPage.svg';
 
 function ManagerHomePage() {
   return (

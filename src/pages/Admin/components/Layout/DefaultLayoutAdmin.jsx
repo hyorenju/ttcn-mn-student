@@ -95,7 +95,7 @@ export function DefaultLayoutAdmin(props) {
             theme="dark"
             mode="inline"
             defaultSelectedKeys={[window.location.pathname]}
-            items={menuList(dataAdmin.roleId)}
+            items={menuList(dataAdmin?.roleId)}
           />
         </Sider>
         <Layout className="site-layout ml-2">

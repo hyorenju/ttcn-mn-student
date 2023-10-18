@@ -12,8 +12,8 @@ export function PopoverAvatarUser(props) {
         <Avatar
           className="flex justify-center items-center border-1 border-black"
           size={{
-            xs: 38,
-            sm: 40,
+            xs: 45,
+            sm: 50,
             md: 56,
             lg: 50,
             xl: 54,

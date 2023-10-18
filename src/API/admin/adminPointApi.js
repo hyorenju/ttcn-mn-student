@@ -1,4 +1,4 @@
-import instane from '../instane';
+import instane from "../instane";
 
 export const adminPointApi = {
   getDataMedCore10: async (id) => {
@@ -71,6 +71,15 @@ export const adminPointApi = {
     const url = `/admin/point/delete/${id}`;
     try {
       const res = await instane.post(url);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  importPointStudent: async (values) => {
+    const url = `/admin/point/import`;
+    try {
+      const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
       throw new Error(error);

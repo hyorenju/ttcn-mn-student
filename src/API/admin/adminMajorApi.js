@@ -1,8 +1,8 @@
-import instane from '../instane';
+import instane from "../instane";
 
 export const adminMajorApi = {
   getAllMajor: async (values) => {
-    const url = '/admin/major/list';
+    const url = "/admin/major/list";
     try {
       const res = await instane.post(url, values);
       return res.data;
@@ -19,10 +19,10 @@ export const adminMajorApi = {
       throw new Error(error);
     }
   },
-  updateMajor: async (id, values) => {
-    const url = `/admin/major/update/${id}`;
+  updateMajor: async (values) => {
+    const url = `/admin/major/update`;
     try {
-      const res = await instane.put(url, values);
+      const res = await instane.post(url, values);
       return res.data;
     } catch (error) {
       throw new Error(error);
@@ -31,7 +31,7 @@ export const adminMajorApi = {
   deleteMajor: async (id) => {
     const url = `/admin/major/delete/${id}`;
     try {
-      const res = await instane.delete(url);
+      const res = await instane.post(url);
       return res.data;
     } catch (error) {
       throw new Error(error);
