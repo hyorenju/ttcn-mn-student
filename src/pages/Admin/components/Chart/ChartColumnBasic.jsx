@@ -21,7 +21,7 @@ export function ChartColumnBasic({ data }) {
     },
     meta: {
       termId: {
-        alias: 'Học kì',
+        alias: 'Học kỳ',
       },
       point: {
         alias: 'Điểm',

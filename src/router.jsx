@@ -1,156 +1,131 @@
-import React from "react";
-import { createBrowserRouter } from "react-router-dom";
-import ErrorPage from "./components/Error/ErrorPage";
-import { NotFound } from "./components/NotFound/NotFound";
-import { DefaultLayoutAdmin } from "./pages/Admin/components/Layout";
-import AdminChangeInfomation from "./pages/Admin/pages/AdminChangeInfomation";
-import ManagerAuthorizationPage from "./pages/Admin/pages/ManagerAuthorizationPage";
-import ManagerClassPage from "./pages/Admin/pages/ManagerClassPage";
-import ManagerCoursePage from "./pages/Admin/pages/ManagerCoursePage";
-import ManagerDisplayHomePage from "./pages/Admin/pages/ManagerDisplayHomePage";
-import ManagerDisplaySildeCardHomePage from "./pages/Admin/pages/ManagerDisplaySildeCardHomePage";
-import ManagerDisplaySlideHomePage from "./pages/Admin/pages/ManagerDisplaySlideHomePage";
-import ManagerErrorImportPage from "./pages/Admin/pages/ManagerErrorImportPage";
-import ManagerHomePage from "./pages/Admin/pages/ManagerHomePage";
-import ManagerMajorPage from "./pages/Admin/pages/ManagerMajorPage";
-import ManagerNewsPage from "./pages/Admin/pages/ManagerNewsPage";
-import ManagerSemestersPage from "./pages/Admin/pages/ManagerSemestersPage";
-import ManagerStatisticalPage from "./pages/Admin/pages/ManagerStatisticalPage";
-import ManagerStatusPage from "./pages/Admin/pages/ManagerStatusPage";
-import ManagerStudentPage from "./pages/Admin/pages/ManagerStudentPage";
-import ManagerTermPointPage from "./pages/Admin/pages/ManagerTermPointPage";
-import AboutUsPageUser from "./pages/User/pages/AboutUsPageUser";
-import ChangePasswordPage from "./pages/User/pages/ChangePasswordPage";
-import DocumentPageUser from "./pages/User/pages/DocumentPageUser";
-import HomePageUser from "./pages/User/pages/HomePageUser";
-import NewsPageDetailUser from "./pages/User/pages/NewsPageDetailUser";
-import NewsPageUser from "./pages/User/pages/NewsPageUser";
-import PersonalInfoUser from "./pages/User/pages/PersonalInfoUser";
+import { createBrowserRouter } from 'react-router-dom';
+import { NotFound } from './components/NotFound/NotFound';
+import { ProtectedAdmin, ProtectedStudent } from './components/Protected';
+import { DefaultLayoutAdmin } from './pages/Admin/components/Layout';
+import AdminChangeInfomation from './pages/Admin/pages/AdminChangeInfomation';
+import ManagerAuthorizationPage from './pages/Admin/pages/ManagerAuthorizationPage';
+import ManagerClassPage from './pages/Admin/pages/ManagerClassPage';
+import ManagerCoursePage from './pages/Admin/pages/ManagerCoursePage';
+import ManagerErrorImportPage from './pages/Admin/pages/ManagerErrorImportPage';
+import ManagerHomePage from './pages/Admin/pages/ManagerHomePage';
+import ManagerMajorPage from './pages/Admin/pages/ManagerMajorPage';
+import ManagerSemestersPage from './pages/Admin/pages/ManagerSemestersPage';
+import ManagerStatisticalPage from './pages/Admin/pages/ManagerStatisticalPage';
+import ManagerStatusPage from './pages/Admin/pages/ManagerStatusPage';
+import ManagerStudentPage from './pages/Admin/pages/ManagerStudentPage';
+import ManagerTermPointPage from './pages/Admin/pages/ManagerTermPointPage';
+import ManagerYearPointPage from './pages/Admin/pages/ManagerYearPointPage';
+import AboutUsPageUser from './pages/User/pages/AboutUsPageUser';
+import ChangePasswordPage from './pages/User/pages/ChangePasswordPage';
+import DocumentPageUser from './pages/User/pages/DocumentPageUser';
+import HomePageUser from './pages/User/pages/HomePageUser';
+import PersonalInfoUser from './pages/User/pages/PersonalInfoUser';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <HomePageUser />,
-    errorElement: <ErrorPage />,
+    errorElement: <NotFound />,
   },
   {
-    path: "/news",
-    element: <NewsPageUser />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: ":newsId",
-        element: <NewsPageDetailUser />,
-        errorElement: <NotFound />,
-      },
-    ],
-  },
-  {
-    path: "/aboutus",
+    path: '/aboutus',
     element: <AboutUsPageUser />,
-    errorElement: <ErrorPage />,
+    errorElement: <NotFound />,
   },
   {
-    path: "/documents",
+    path: '/documents',
     element: <DocumentPageUser />,
-    errorElement: <ErrorPage />,
+    errorElement: <NotFound />,
   },
   {
-    path: "/personal",
-    element: <PersonalInfoUser />,
-    errorElement: <ErrorPage />,
+    path: '/personal',
+    element: (
+      <ProtectedStudent>
+        <PersonalInfoUser />
+      </ProtectedStudent>
+    ),
+    errorElement: <NotFound />,
   },
   {
-    path: "/changepassword",
+    path: '/changepassword',
     element: <ChangePasswordPage />,
-    errorElement: <ErrorPage />,
+    errorElement: <NotFound />,
   },
 
   // Admin routes
   {
-    path: "/manage",
-    element: <DefaultLayoutAdmin />,
-    errorElement: <ErrorPage />,
+    path: '/manage',
+    element: (
+      <ProtectedAdmin>
+        <DefaultLayoutAdmin />
+      </ProtectedAdmin>
+    ),
+    errorElement: <NotFound />,
     children: [
       {
-        path: "",
+        path: '',
         element: <ManagerHomePage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "students",
+        path: 'students',
         element: <ManagerStudentPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "classes",
+        path: 'classes',
         element: <ManagerClassPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "semesters",
+        path: 'semesters',
         element: <ManagerSemestersPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "courses",
+        path: 'courses',
         element: <ManagerCoursePage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "authorization",
+        path: 'authorization',
         element: <ManagerAuthorizationPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "majors",
+        path: 'majors',
         element: <ManagerMajorPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "points",
+        path: 'points-term',
         element: <ManagerTermPointPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "status",
+        path: 'points-year',
+        element: <ManagerYearPointPage />,
+        errorElement: <NotFound />,
+      },
+      {
+        path: 'status',
         element: <ManagerStatusPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "error-import",
-        element: <ManagerErrorImportPage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "infomation",
+        path: 'infomation',
         element: <AdminChangeInfomation />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "statistical",
+        path: 'statistical',
         element: <ManagerStatisticalPage />,
-        errorElement: <ErrorPage />,
+        errorElement: <NotFound />,
       },
       {
-        path: "news",
-        element: <ManagerNewsPage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "display-homepage",
-        element: <ManagerDisplayHomePage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "slidecard-homepage",
-        element: <ManagerDisplaySildeCardHomePage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "slide-homepage",
-        element: <ManagerDisplaySlideHomePage />,
-        errorElement: <ErrorPage />,
+        path: 'error-import',
+        element: <ManagerErrorImportPage />,
+        errorElement: <NotFound />,
       },
     ],
   },

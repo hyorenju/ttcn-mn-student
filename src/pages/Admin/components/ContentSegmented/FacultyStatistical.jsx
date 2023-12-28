@@ -1,9 +1,9 @@
+import { adminSemesterApi } from '@/API/admin/adminSemesterApi';
+import { adminStatistic } from '@/API/admin/adminStatistic';
+import { ButtonCustom } from '@/components/Button';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Select, Space } from 'antd';
-import React, { useState } from 'react';
-import { adminSemesterApi } from '../../../../API/admin/adminSemesterApi';
-import { adminStatistic } from '../../../../API/admin/adminStatistic';
-import { ButtonCustom } from '../../../../components/Button';
+import { useState } from 'react';
 import { ChartGroup, ChartPieBasic } from '../Chart';
 
 export function FacultyStatistical(props) {
@@ -17,15 +17,15 @@ export function FacultyStatistical(props) {
   const { data } = useQuery({
     cacheTime: 10 * 60 * 1000,
     staleTime: 11 * 60 * 1000,
-    queryKey: ['getListTerm'],
-    queryFn: async () => await adminSemesterApi.getAllSemester({ page: 1, size: 1000 }),
+    queryKey: ['getTermList'],
+    queryFn: () => adminSemesterApi.getAllTermSelection(),
   });
   const optionsTerm = data?.data?.items?.map((i) => {
     return { label: i.termName, value: i.id };
   });
   const handleGetDataColumn = useMutation({
     mutationKey: ['getDataColumn'],
-    mutationFn: async () => await adminStatistic.getDataStatsticFacultyColumn(valueSubmit),
+    mutationFn: () => adminStatistic.getDataStatsticFacultyColumn(valueSubmit),
     onSuccess: (res) => {
       if (res && res.success === true) {
         setDataColumn(res.data.chart);
@@ -34,7 +34,7 @@ export function FacultyStatistical(props) {
   });
   const handleGetDataCircle = useMutation({
     mutationKey: ['getDataCircle'],
-    mutationFn: async () => await adminStatistic.getDataStatsticFacultyCircle(valueSubmit),
+    mutationFn: () => adminStatistic.getDataStatsticFacultyCircle(valueSubmit),
     onSuccess: (res) => {
       if (res && res.success === true) {
         setDataPie(res.data.items);
@@ -52,19 +52,19 @@ export function FacultyStatistical(props) {
     <div>
       <div className='flex gap-4'>
         <Space>
-          Kiểu biểu đồ
+          Lọc theo
           <Select
-            className='w-[200px]'
+            className='w-[300px]'
             size='large'
-            placeholder='Chọn biểu đồ'
+            placeholder='Lọc theo'
             value={optionChart}
             options={[
               {
-                label: 'Biểu đồ tròn',
+                label: 'Xếp loại sinh viên',
                 value: 'circle',
               },
               {
-                label: 'Biểu đồ cột',
+                label: 'Sinh viên xin thôi học và bị buộc thôi học',
                 value: 'column',
               },
             ]}
@@ -72,24 +72,24 @@ export function FacultyStatistical(props) {
           />
         </Space>
         <Space>
-          Từ học kì:
+          Từ học kỳ:
           <Select
             options={optionsTerm}
             className='w-[200px]'
             size='large'
             value={valueSubmit.start}
-            placeholder='Chọn học kì bắt đầu'
+            placeholder='Chọn học kỳ bắt đầu'
             onChange={(e) => setValueSubmit((prev) => ({ ...prev, start: e }))}
           />
         </Space>
         <Space>
-          Đến học kì:
+          Đến học kỳ:
           <Select
             options={optionsTerm}
             className='w-[200px]'
             size='large'
             value={valueSubmit.end}
-            placeholder='Chọn học kì kết thúc'
+            placeholder='Chọn học kỳ kết thúc'
             onChange={(e) => setValueSubmit((prev) => ({ ...prev, end: e }))}
           />
         </Space>

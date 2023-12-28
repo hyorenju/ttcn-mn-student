@@ -1,14 +1,11 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { ButtonCustom } from "../../../../components/Button";
-import { Space, Table } from "antd";
-import { ModalFormStatus } from "../Modal";
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminStatusApi } from "../../../../API/admin/adminStatusApi";
-import {
-  notificationError,
-  notificationSuccess,
-} from "../../../../components/Notification";
+import { adminStatusApi } from '@/API/admin/adminStatusApi';
+import { ButtonCustom } from '@/components/Button';
+import { notificationError, notificationSuccess } from '@/components/Notification';
+import { PlusOutlined } from '@ant-design/icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Space, Table } from 'antd';
+import { useState } from 'react';
+import { ModalFormStatus } from '../Modal';
 
 export function TableListStatus() {
   const [pageCurrent, setPageCurrent] = useState(1);
@@ -19,16 +16,12 @@ export function TableListStatus() {
   const { data, isFetching } = useQuery({
     staleTime: 60 * 5000,
     cacheTime: 5 * 60 * 5000,
-    queryKey: ["listStatus", pageCurrent, pageSize],
-    queryFn: async () => {
-      try {
-        const res = await adminStatusApi.getAllStatus({
-          page: pageCurrent,
-          size: pageSize,
-        });
-        if (res) return res;
-      } catch (error) {}
-    },
+    queryKey: ['listStatus', pageCurrent, pageSize],
+    queryFn: async () =>
+      await adminStatusApi.getAllStatus({
+        page: pageCurrent,
+        size: pageSize,
+      }),
   });
 
   const handleChangePaginationTable = (page, size) => {
@@ -43,15 +36,15 @@ export function TableListStatus() {
     setDataStatus(record);
   };
   const deleteStatus = useMutation({
-    mutationKey: ["deleteStatus"],
+    mutationKey: ['deleteStatus'],
     mutationFn: async (id) => await adminStatusApi.deleteStatus(id),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       if (res && res.success === true) {
-        queryClient.invalidateQueries({
-          queryKey: ["listStatus", pageCurrent, pageSize],
+        await queryClient.invalidateQueries({
+          queryKey: ['listStatus', pageCurrent, pageSize],
           exact: true,
         });
-        notificationSuccess("Xóa thành công");
+        notificationSuccess('Xóa thành công');
       } else if (res && res.success === false) {
         notificationError(res?.error.message);
       }
@@ -62,23 +55,15 @@ export function TableListStatus() {
   };
   const columns = [
     {
-      title: "Tên trạng thái",
-      dataIndex: "name",
+      title: 'Tên tình trạng',
+      dataIndex: 'name',
     },
     {
-      title: "Hành động",
+      title: 'Hành động',
       render: (index, record) => (
         <Space>
-          <ButtonCustom
-            title="Chỉnh sửa"
-            handleClick={() => handleClickEditStatus(record)}
-          />
-          <ButtonCustom
-            title="Xóa"
-            type="primary"
-            danger
-            handleClick={() => handleClickDeleteStatus(record.id)}
-          />
+          <ButtonCustom title='Chỉnh sửa' handleClick={() => handleClickEditStatus(record)} />
+          <ButtonCustom title='Xóa' type='primary' danger handleClick={() => handleClickDeleteStatus(record.id)} />
         </Space>
       ),
     },
@@ -86,15 +71,11 @@ export function TableListStatus() {
   return (
     <>
       <div>
-        <Space className="mb-2">
-          <ButtonCustom
-            title="Thêm trạng thái"
-            icon={<PlusOutlined />}
-            handleClick={handleClickAddStatus}
-          />
+        <Space className='mb-2'>
+          <ButtonCustom title='Thêm tình trạng' icon={<PlusOutlined />} handleClick={handleClickAddStatus} />
         </Space>
         <Table
-          rowKey={"name"}
+          rowKey={'name'}
           columns={columns}
           loading={isFetching}
           dataSource={data?.data?.items}

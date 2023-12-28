@@ -1,9 +1,9 @@
+import { adminSemesterApi } from '@/API/admin/adminSemesterApi';
+import { adminStatistic } from '@/API/admin/adminStatistic';
+import { ButtonCustom } from '@/components/Button';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Input, Select, Space } from 'antd';
-import React, { useState } from 'react';
-import { adminSemesterApi } from '../../../../API/admin/adminSemesterApi';
-import { adminStatistic } from '../../../../API/admin/adminStatistic';
-import { ButtonCustom } from '../../../../components/Button';
+import { useState } from 'react';
 import { ChartPieBasic } from '../Chart';
 
 export function MajorStatistical(props) {
@@ -27,7 +27,7 @@ export function MajorStatistical(props) {
     mutationFn: async () => await adminStatistic.getDataStatsticMajor(majorId, valueSubmit),
     onSuccess: (res) => {
       if (res && res.success === true) {
-        setDataStatistic(res.data.items);
+        setDataStatistic(res.data?.items);
       }
     },
   });
@@ -44,24 +44,24 @@ export function MajorStatistical(props) {
           />
         </Space>
         <Space>
-          Từ học kì:
+          Từ học kỳ:
           <Select
             value={valueSubmit.start}
             options={optionsTerm}
             className='w-[200px]'
             size='large'
-            placeholder='Chọn học kì bắt đầu'
+            placeholder='Chọn học kỳ bắt đầu'
             onChange={(e) => setValueSubmit((prev) => ({ ...prev, start: e }))}
           />
         </Space>
         <Space>
-          Đến học kì:
+          Đến học kỳ:
           <Select
             value={valueSubmit.end}
             options={optionsTerm}
             className='w-[200px]'
             size='large'
-            placeholder='Chọn học kì kết thúc'
+            placeholder='Chọn học kỳ kết thúc'
             onChange={(e) => setValueSubmit((prev) => ({ ...prev, end: e }))}
           />
         </Space>
@@ -73,6 +73,7 @@ export function MajorStatistical(props) {
           loading={handleSubmit.isLoading}
         />
       </div>
+      <h1 className='my-12 uppercase text-2xl text-center'>Thống kê xếp loại rèn luyện theo ngành</h1>
       {dataStatistic &&
         dataStatistic.map((item) => (
           <section>

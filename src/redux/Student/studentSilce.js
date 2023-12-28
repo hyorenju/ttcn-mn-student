@@ -2,11 +2,16 @@ const { createSlice } = require('@reduxjs/toolkit');
 
 const initialState = {
   studentList: [],
-  studentId: 0,
+  studentId: null,
   total: 0,
   pageCurrent: 1,
   pageSize: 10,
-  filer: {},
+  filter: {
+    majorId: null,
+    courseId: null,
+    classId: null,
+    familySituation: null,
+  },
 };
 
 const studentSlice = createSlice({
@@ -17,7 +22,7 @@ const studentSlice = createSlice({
       state.studentId = action.payload;
     },
     setFilter: (state, action) => {
-      state.filer = action.payload;
+      state.filter = action.payload;
     },
     setDataStudentList: (state, action) => {
       state.studentList = action.payload;
@@ -40,6 +45,18 @@ const studentSlice = createSlice({
         state.studentList.splice(studentIndex, 1);
       }
     },
+    setClassId: (state, action) => {
+      state.filter.classId = action.payload;
+    },
+    setCourseId: (state, action) => {
+      state.filter.courseId = action.payload;
+    },
+    setMajorId: (state, action) => {
+      state.filter.majorId = action.payload;
+    },
+    setFamilySituation: (state, action) => {
+      state.filter.familySituation = action.payload;
+    },
     setTotal: (state, action) => {
       state.total = action.payload;
     },
@@ -57,6 +74,10 @@ export const {
   updateStudent,
   deleteStudent,
   setTotal,
+  setClassId,
+  setCourseId,
+  setMajorId,
+  setFamilySituation,
   setPageCurrent,
   setPageSize,
   setDataStudentList,

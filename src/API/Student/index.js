@@ -1,4 +1,4 @@
-import instane from "../instane";
+import instane from '../instane';
 
 export const studentApi = {
   changePassword: async (values) => {
@@ -30,6 +30,24 @@ export const studentApi = {
   },
   updateAvatar: async (values) => {
     const url = `/student/avatar`;
+    try {
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  updateEmail: async (values) => {
+    const url = `/student/email`;
+    try {
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  updateProfile: async (values) => {
+    const url = `/student/update`;
     try {
       const res = await instane.post(url, values);
       return res.data;

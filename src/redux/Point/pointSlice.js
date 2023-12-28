@@ -2,21 +2,23 @@ const { createSlice } = require('@reduxjs/toolkit');
 
 const initialState = {
   pointList: [],
-  studentId: 0,
-  termId: 0,
+  studentId: null,
+  classId: null,
+  termId: null,
   total: 0,
   pageCurrent: 1,
   pageSize: 10,
   filter: {},
+  sort: {
+    sortColumn: null,
+    sortType: null,
+  },
 };
 
 const pointSlice = createSlice({
   name: 'point',
   initialState,
   reducers: {
-    setTermId: (state, action) => {
-      state.termId = action.payload;
-    },
     setStudentId: (state, action) => {
       state.studentId = action.payload;
     },
@@ -44,6 +46,18 @@ const pointSlice = createSlice({
         state.pointList.splice(studentIndex, 1);
       }
     },
+    setClassId: (state, action) => {
+      state.classId = action.payload;
+    },
+    setTermId: (state, action) => {
+      state.termId = action.payload;
+    },
+    setSortColumn: (state, action) => {
+      state.sort.sortColumn = action.payload;
+    },
+    setSortType: (state, action) => {
+      state.sort.sortType = action.payload;
+    },
     setTotal: (state, action) => {
       state.total = action.payload;
     },
@@ -60,12 +74,15 @@ export const {
   addPoint,
   updatePoint,
   deletePoint,
+  setSortColumn,
+  setSortType,
+  setClassId,
+  setTermId,
   setTotal,
   setPageCurrent,
   setPageSize,
   setDataPointList,
   setStudentId,
-  setTermId,
   setFilter,
 } = pointSlice.actions;
 const pointReducer = pointSlice.reducer;

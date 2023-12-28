@@ -91,4 +91,13 @@ export const adminAdminApi = {
       throw new Error(error);
     }
   },
+  uploadAvatar: async (values) => {
+    try {
+      const url = `/admin/admin/avatar`;
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };

@@ -1,6 +1,5 @@
+import { ButtonCustom } from '@/components/Button';
 import { ModalForm } from '@ant-design/pro-components';
-import React from 'react';
-import { ButtonCustom } from '../../../../components/Button';
 
 export function ModalFormDocs({
   children,

@@ -1,11 +1,11 @@
-import { adminDisplayApi } from "@/API/admin/adminDisplayApi";
-import { ButtonCustom } from "@/components/Button";
-import { EditOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Image, Table, Typography } from "antd";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { ModalFormErrorImport } from "../components/Modal";
+import { adminDisplayApi } from '@/API/admin/adminDisplayApi';
+import { ButtonCustom } from '@/components/Button';
+import { EditOutlined } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
+import { Image, Table, Typography } from 'antd';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { ModalFormErrorImport } from '../components/Modal';
 
 function ManagerErrorImportPage() {
   const { Title } = Typography;
@@ -16,14 +16,15 @@ function ManagerErrorImportPage() {
   const [dataForm, setDataForm] = useState({});
 
   const { data, isFetching } = useQuery({
-    cacheTime: 10 * 60 * 1000,
+    staleTime: 14 * 60 * 5000,
+    cacheTime: 15 * 60 * 5000,
     keepPreviousData: true,
-    queryKey: ["listErrorList", pageCurrent, pageSize],
-    queryFn: async () =>
-      await adminDisplayApi.getDisplayList({
+    queryKey: ['listErrorList', pageCurrent, pageSize],
+    queryFn: () =>
+      adminDisplayApi.getDisplayList({
         page: pageCurrent,
         size: pageSize,
-        location: "ErrorImport",
+        location: 'ErrorImport',
       }),
   });
 
@@ -41,36 +42,29 @@ function ManagerErrorImportPage() {
 
   const columns = [
     {
-      align: "center",
-      width: "3%",
-      dataIndex: "id",
+      align: 'center',
+      width: '3%',
+      dataIndex: 'id',
     },
     {
-      width: "15%",
-      title: "Ảnh mẫu",
-      align: "center",
-      render: (index, record) => (
-        <Image
-          src={record.img}
-          width={150}
-          height={100}
-          className="object-cover"
-        />
-      ),
+      width: '15%',
+      title: 'Ảnh mẫu',
+      align: 'center',
+      render: (index, record) => <Image src={record.img} width={150} height={100} className='object-cover' />,
     },
     {
-      title: "Tiêu đề",
-      align: "center",
-      width: "25%",
-      dataIndex: "title",
+      title: 'Tiêu đề',
+      align: 'center',
+      width: '25%',
+      dataIndex: 'title',
     },
-    { title: "Nội dung", dataIndex: "content", width: "30%" },
+    { title: 'Nội dung', dataIndex: 'content', width: '30%' },
     {
-      align: "center",
-      width: "10%",
+      align: 'center',
+      width: '10%',
       render: (e, record, index) => (
         <ButtonCustom
-          title={"Chỉnh sửa"}
+          title={'Chỉnh sửa'}
           icon={<EditOutlined />}
           handleClick={() => handleClickBtnEditDisplay(record)}
         />
@@ -79,14 +73,14 @@ function ManagerErrorImportPage() {
   ];
   return (
     <div>
-      <div className="mb-3 relative">
+      <div className='mb-3 relative'>
         <Title
-          className="hidden xl:block"
+          className='hidden xl:block'
           level={3}
           style={{
-            textTransform: "uppercase",
+            textTransform: 'uppercase',
             marginBottom: 12,
-            textAlign: "center",
+            textAlign: 'center',
           }}
         >
           Lỗi nhập dữ liệu
@@ -95,7 +89,7 @@ function ManagerErrorImportPage() {
           scroll={{
             y: 630,
           }}
-          rowKey="id"
+          rowKey='id'
           loading={isFetching}
           bordered={true}
           dataSource={data?.data?.items}

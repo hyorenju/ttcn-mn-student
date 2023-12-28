@@ -50,7 +50,7 @@ export function ColumnPointTraining({ dataStudent }) {
     },
     meta: {
       time: {
-        alias: 'Kì',
+        alias: 'Kỳ',
       },
       value: {
         alias: 'Điểm rèn luyện',
@@ -63,7 +63,7 @@ export function ColumnPointTraining({ dataStudent }) {
         <div className='mt-12'>
           <Column {...config} />
           <Text style={{ display: 'block', textAlign: 'center', opacity: 0.5, marginTop: '10px' }} italic>
-            Biểu đồ điểm rèn luyện theo từng kì học
+            Biểu đồ điểm rèn luyện theo từng kỳ học
           </Text>
         </div>
       )}

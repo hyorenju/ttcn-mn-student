@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import adminReducer from './Admin/adminSilce';
 import modalLoginReducer from './Modal/modalLoginSlice';
+import pointOfYearReducer from './Point/pointOfYear';
 import pointReducer from './Point/pointSlice';
-import popoverStudentFillerReducer from './Popover/popoverStudentFiller';
 import studentReducer from './Student/studentSilce';
 import adminTrashReducer from './Trash/adminTrashSlice';
 import pointTrashReducer from './Trash/pointTrashSilce';
@@ -12,13 +12,13 @@ import userReducer from './User/userSlice';
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    modalLogin: modalLoginReducer,
-    studentList: studentReducer,
     pointList: pointReducer,
-    adminList: adminReducer,
-    studentTrash: studentTrashReducer,
     pointTrash: pointTrashReducer,
+    pointOfYear: pointOfYearReducer,
+    adminList: adminReducer,
+    studentList: studentReducer,
+    modalLogin: modalLoginReducer,
     adminTrash: adminTrashReducer,
-    popoverStudentFiller: popoverStudentFillerReducer,
+    studentTrash: studentTrashReducer,
   },
 });

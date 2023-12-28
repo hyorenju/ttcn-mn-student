@@ -28,10 +28,10 @@ export const adminStudentStatusApi = {
       throw new Error(error);
     }
   },
-  deleteStudentStatus: async (id, values) => {
+  deleteStudentStatus: async (id) => {
     const url = `/admin/student-status/delete/${id}`;
     try {
-      const res = await instane.post(url, values);
+      const res = await instane.post(url);
       return res.data;
     } catch (error) {
       throw new Error(error);

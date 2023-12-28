@@ -1,87 +1,63 @@
-import { adminDisplayApi } from "@/API/admin/adminDisplayApi";
-import { ButtonCustom } from "@/components/Button";
-import { EditOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Image, Table, Typography } from "antd";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { ModalFormErrorImport } from "../components/Modal";
+import { adminDisplayApi } from '@/API/admin/adminDisplayApi';
+import { ButtonCustom } from '@/components/Button';
+import { EditOutlined } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
+import { Image, Table, Typography, Upload } from 'antd';
+import { useState } from 'react';
 
 function ManagerDisplaySildeCardHomePage() {
   const { Title } = Typography;
-  const dispatch = useDispatch();
   const [pageCurrent, setPageCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [openModalForm, setOpenModalForm] = useState(false);
-  const [dataForm, setDataForm] = useState({});
 
   const { data, isFetching } = useQuery({
-    cacheTime: 10 * 60 * 1000,
+    staleTime: 14 * 60 * 5000,
+    cacheTime: 15 * 60 * 5000,
     keepPreviousData: true,
-    queryKey: ["listErrorList", pageCurrent, pageSize],
-    queryFn: async () =>
-      await adminDisplayApi.getDisplayList({
+    queryKey: ['bannerHistoryHomepage', pageCurrent, pageSize],
+    queryFn: () =>
+      adminDisplayApi.getDisplayList({
         page: pageCurrent,
         size: pageSize,
-        location: "Swiper",
+        location: 'Swiper',
       }),
   });
 
   // ====================================
   const handleChangePaginationTable = (page, size) => {
-    dispatch(setPageSize(size));
-    dispatch(setPageCurrent(page));
-  };
-  const handleClickBtnEditDisplay = (record) => {
-    setDataForm(record);
-    setOpenModalForm(true);
+    setPageSize(size);
+    setPageCurrent(page);
   };
 
   // ====================================
 
   const columns = [
     {
-      width: "15%",
-      title: "Ảnh mẫu",
-      align: "center",
-      render: (index, record) => (
-        <Image
-          src={record.img}
-          width={150}
-          height={100}
-          className="object-cover"
-        />
-      ),
+      width: '15%',
+      title: 'Ảnh mẫu',
+      align: 'center',
+      render: (index, record) => <Image src={record.img} width={150} height={100} className='object-cover' />,
     },
     {
-      title: "Tiêu đề",
-      align: "center",
-      width: "25%",
-      dataIndex: "title",
-    },
-    { title: "Nội dung", dataIndex: "content", width: "30%" },
-    {
-      align: "center",
-      width: "10%",
+      align: 'center',
+      width: '10%',
       render: (e, record, index) => (
-        <ButtonCustom
-          title={"Chỉnh sửa"}
-          icon={<EditOutlined />}
-          handleClick={() => handleClickBtnEditDisplay(record)}
-        />
+        <Upload>
+          <ButtonCustom title={'Cập nhật hình ảnh'} icon={<EditOutlined />} />
+        </Upload>
       ),
     },
   ];
   return (
     <div>
-      <div className="mb-3 relative">
+      <div className='mb-3 relative'>
         <Title
-          className="hidden xl:block"
+          className='hidden xl:block'
           level={3}
           style={{
-            textTransform: "uppercase",
+            textTransform: 'uppercase',
             marginBottom: 12,
-            textAlign: "center",
+            textAlign: 'center',
           }}
         >
           Hình ảnh lịch sử phát triển HomePage
@@ -90,7 +66,7 @@ function ManagerDisplaySildeCardHomePage() {
           scroll={{
             y: 630,
           }}
-          rowKey="id"
+          rowKey='id'
           loading={isFetching}
           bordered={true}
           dataSource={data?.data?.items}
@@ -106,19 +82,6 @@ function ManagerDisplaySildeCardHomePage() {
           }}
         />
       </div>
-      <ModalFormErrorImport
-        onSuccess={() => {
-          setOpenModalForm(false);
-        }}
-        dataForm={dataForm}
-        openForm={openModalForm}
-        onChangeClickOpen={(open) => {
-          if (!open) {
-            setDataForm({});
-            setOpenModalForm(false);
-          }
-        }}
-      />
     </div>
   );
 }

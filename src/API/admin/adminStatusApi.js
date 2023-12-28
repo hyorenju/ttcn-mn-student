@@ -1,6 +1,15 @@
 import instane from '../instane';
 
 export const adminStatusApi = {
+  getStatusSelect: async () => {
+    const url = '/admin/status/selection';
+    try {
+      const res = await instane.post(url);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
   getAllStatus: async (values) => {
     const url = '/admin/status/list';
     try {

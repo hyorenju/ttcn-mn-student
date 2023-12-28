@@ -1,16 +1,20 @@
-import { UserOutlined } from "@ant-design/icons";
-import { Avatar } from "antd";
-import React from "react";
-import { PopoverIndex } from ".";
-import { MenuUser } from "../Menu";
+import { UserOutlined } from '@ant-design/icons';
+import { Avatar } from 'antd';
+import React from 'react';
+import { PopoverIndex } from '.';
+import { MenuUser } from '../Menu';
 
 export function PopoverAvatarUser(props) {
-  const dataStudent = JSON.parse(localStorage.getItem("info_student"));
+  const dataStudent = JSON.parse(localStorage.getItem('info_student'));
   return (
     <div>
       <PopoverIndex content={<MenuUser />}>
         <Avatar
-          className="flex justify-center items-center border-1 border-black"
+          className={`${
+            dataStudent.avatar
+              ? 'border-1 border-black flex justify-center items-center'
+              : 'flex justify-center items-center'
+          } `}
           size={{
             xs: 45,
             sm: 50,
@@ -20,7 +24,7 @@ export function PopoverAvatarUser(props) {
             xxl: 57,
           }}
           icon={<UserOutlined />}
-          src={<img src={dataStudent?.avatar} alt="avatar_user" />}
+          src={dataStudent?.avatar ? <img src={dataStudent?.avatar} alt='avatar_user' /> : ''}
         />
       </PopoverIndex>
     </div>

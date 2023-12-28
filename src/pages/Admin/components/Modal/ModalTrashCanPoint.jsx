@@ -1,40 +1,25 @@
-import { trashPointApi } from "@/API/Trash/pointTrashApi";
-import { ButtonCustom } from "@/components/Button";
-import {
-  notificationError,
-  notificationSuccess,
-} from "@/components/Notification";
-import { addPoint } from "@/redux/Point/pointSlice";
-import {
-  getPointList,
-  restorePoint,
-  setPageCurrent,
-  setPageSize,
-  setTotal,
-} from "@/redux/Trash/pointTrashSilce";
-import {
-  DeleteOutlined,
-  MoreOutlined,
-  RedoOutlined,
-  UsergroupAddOutlined,
-} from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Modal, Popover, Space, Table } from "antd";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { trashPointApi } from '@/API/Trash/pointTrashApi';
+import { ButtonCustom } from '@/components/Button';
+import { messageErrorToSever } from '@/components/Message';
+import { notificationSuccess } from '@/components/Notification';
+import { addPoint } from '@/redux/Point/pointSlice';
+import { getPointList, restorePoint, setPageCurrent, setPageSize, setTotal } from '@/redux/Trash/pointTrashSilce';
+import { DeleteOutlined, MoreOutlined, RedoOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Modal, Popover, Space, Table } from 'antd';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const ModalTrashCanPoint = ({ open, close }) => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const { pointList, total, pageSize, pageCurrent } = useSelector(
-    (state) => state.pointTrash
-  );
+  const { pointList, total, pageSize, pageCurrent } = useSelector((state) => state.pointTrash);
 
   const hasDisabled = selectedRowKeys.length > 0;
   const getDataTrashPoint = useQuery({
     cacheTime: 5 * 60 * 1000,
-    queryKey: ["dataPointTrash", pageCurrent, pageSize],
+    queryKey: ['dataPointTrash', pageCurrent, pageSize],
     queryFn: async () =>
       await trashPointApi.getTrashAll({
         page: pageCurrent,
@@ -44,59 +29,49 @@ export const ModalTrashCanPoint = ({ open, close }) => {
       if (res && res.success === true) {
         dispatch(getPointList(res.data?.items));
         dispatch(setTotal(res.data?.total));
-      } else {
-        notificationError("Có lỗi");
-      }
+      } else messageErrorToSever(res);
     },
   });
 
   const restorePoints = useMutation({
-    mutationKey: ["restorePoint"],
+    mutationKey: ['restorePoint'],
     mutationFn: async (id) => await trashPointApi.restorePoint(id),
-    onSuccess: (data) => {
-      if (data && data.success === true) {
-        notificationSuccess("Khôi phục thành công");
-        dispatch(restorePoint(data.data));
-        dispatch(addPoint(data.data?.point));
-      } else {
-        notificationError("Khôi phục thất bại");
-      }
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        notificationSuccess('Khôi phục thành công');
+        dispatch(restorePoint(res.data));
+        dispatch(addPoint(res.data?.point));
+      } else messageErrorToSever(res, 'Khôi phục thất bại');
     },
   });
   const restorePointList = useMutation({
-    mutationKey: ["restorePointList"],
-    mutationFn: async () =>
-      await trashPointApi.restorePoint({ ids: selectedRowKeys }),
-    onSuccess: async (data) => {
-      if (data && data.success === true) {
+    mutationKey: ['restorePointList'],
+    mutationFn: async () => await trashPointApi.restorePointList({ ids: selectedRowKeys }),
+    onSuccess: async (res) => {
+      if (res && res.success === true) {
         await queryClient.invalidateQueries({
-          queryKey: ["dataPointTrash", pageCurrent, pageSize],
+          queryKey: ['dataPointTrash', pageCurrent, pageSize],
           exact: true,
         });
         await queryClient.invalidateQueries({
-          queryKey: ["pointTermList"],
+          queryKey: ['pointTermList'],
         });
         setSelectedRowKeys([]);
-        notificationSuccess("Khôi phục thành công");
-      } else {
-        notificationError("Khôi phục thất bại");
-      }
+        notificationSuccess('Khôi phục thành công');
+      } else messageErrorToSever('Khôi phục thất bại');
     },
   });
   const permanentlyDeletedPoint = useMutation({
-    mutationKey: ["permanentDeletedStudent"],
+    mutationKey: ['permanentDeletedStudent'],
     mutationFn: async (id) => await trashPointApi.permanentlyDeletedPoint(id),
     onSuccess: (res) => {
       if (res && res.success === true) {
         dispatch(restorePoint(res.data));
-        notificationSuccess("Xóa thành công");
-      } else {
-        notificationError("Xóa thất bại");
-      }
+        notificationSuccess('Xóa thành công');
+      } else messageErrorToSever(res, 'Xóa thất bại');
     },
   });
-  const handleChangeSelection = (e, record) =>
-    setSelectedRowKeys(record.map((data) => data.id));
+  const handleChangeSelection = (e, record) => setSelectedRowKeys(record.map((data) => data.id));
   const handleChangePagination = (page, size) => {
     dispatch(setPageCurrent(page));
     dispatch(setPageSize(size));
@@ -112,78 +87,75 @@ export const ModalTrashCanPoint = ({ open, close }) => {
   };
   const columns = [
     {
-      title: "Mã sinh viên",
-      dataIndex: ["point", "student", "id"],
-      align: "center",
-      key: "studentId",
+      title: 'Mã sinh viên',
+      dataIndex: ['point', 'student', 'id'],
+      align: 'center',
+      key: 'studentId',
     },
     {
-      title: "Họ Đệm",
-      dataIndex: ["point", "student", "surname"],
-      align: "center",
-      key: "surname",
+      title: 'Họ Đệm',
+      dataIndex: ['point', 'student', 'surname'],
+      align: 'center',
+      key: 'surname',
     },
     {
-      title: "Tên",
-      dataIndex: ["point", "student", "lastName"],
-      align: "center",
-      key: "lastName",
+      title: 'Tên',
+      dataIndex: ['point', 'student', 'lastName'],
+      align: 'center',
+      key: 'lastName',
     },
     {
-      title: "Lớp",
-      dataIndex: ["point", "student", "aclass", "id"],
-      align: "center",
-      key: "class",
+      title: 'Lớp',
+      dataIndex: ['point', 'student', 'aclass', 'id'],
+      align: 'center',
+      key: 'class',
     },
     {
-      title: "Mã học kì",
-      dataIndex: ["point", "term", "id"],
-      align: "center",
-      key: "termId",
+      title: 'Mã học kỳ',
+      dataIndex: ['point', 'term', 'id'],
+      align: 'center',
+      key: 'termId',
     },
     {
-      title: "Thời gian xóa",
-      dataIndex: "time",
-      align: "center",
-      key: "time",
-      width: "15%",
+      title: 'Thời gian xóa',
+      dataIndex: 'time',
+      align: 'center',
+      key: 'time',
+      width: '15%',
     },
     {
-      title: "Người xóa",
-      dataIndex: ["deletedBy", "name"],
-      align: "center",
-      key: "byWhom",
-      width: "15%",
+      title: 'Người xóa',
+      dataIndex: ['deletedBy', 'name'],
+      align: 'center',
+      key: 'byWhom',
+      width: '15%',
     },
     {
-      align: "center",
-      width: "8%",
+      align: 'center',
+      width: '8%',
       render: (record) => (
         <Popover
-          trigger={"click"}
-          placement="right"
+          trigger={'click'}
+          placement='right'
           content={
-            <Space direction="vertical">
+            <Space direction='vertical'>
               <ButtonCustom
                 loading={restorePoints.isLoading}
-                title="Khôi phục"
+                title='Khôi phục'
                 icon={<RedoOutlined />}
                 handleClick={() => handleRestorePoint(record.id)}
               />
               <ButtonCustom
-                title="Xóa vĩnh viễn"
+                title='Xóa vĩnh viễn'
                 danger
-                type="primary"
+                type='primary'
                 icon={<DeleteOutlined />}
                 handleClick={() => handlePermanentlyDeletePoint(record.id)}
               />
             </Space>
           }
         >
-          <Button
-            className="flex items-center justify-center"
-            icon={<MoreOutlined />}
-          />
+          <Button className='flex items-center justify-center' icon={<MoreOutlined />} />
         </Popover>
       ),
     },
@@ -192,21 +164,21 @@ export const ModalTrashCanPoint = ({ open, close }) => {
   return (
     <>
       <Modal
-        title="Thùng rác"
+        title='Thùng rác'
         width={1000}
         maskClosable={false}
         open={open}
         onOk={close}
         onCancel={close}
-        okText="Xong"
+        okText='Xong'
         cancelButtonProps={{
           hidden: true,
         }}
       >
-        <Space className="mb-2">
+        <Space className='mb-2'>
           <ButtonCustom
-            title="Khôi phục"
-            type="primary"
+            title='Khôi phục'
+            type='primary'
             icon={<UsergroupAddOutlined />}
             disabled={!hasDisabled}
             loading={restorePointList.isLoading}
@@ -214,7 +186,7 @@ export const ModalTrashCanPoint = ({ open, close }) => {
           />
         </Space>
         <Table
-          rowKey="id"
+          rowKey='id'
           loading={getDataTrashPoint.isFetching}
           scroll={{
             y: 400,

@@ -1,18 +1,19 @@
-import Cookies from "js-cookie";
-import React, { Fragment } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import logo from "../../../../../assets/img/smfita-bl-logo.png";
-import { ButtonCustom } from "../../../../../components/Button";
-import { setOpenModal } from "../../../../../redux/Modal/modalLoginSlice";
-import { ModalFormLogin } from "../../Modal";
-import { PopoverAvatarUser, PopoverSubMenu } from "../../Popover";
+import logo from '@/assets/img/logo_header.png';
+import { ButtonCustom } from '@/components/Button';
+import { setOpenModal } from '@/redux/Modal/modalLoginSlice';
+import Cookies from 'js-cookie';
+import { Fragment } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { ModalFormLogin } from '../../Modal';
+import { PopoverAvatarUser, PopoverSubMenu } from '../../Popover';
 
 export function Navigate() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = Cookies.get("access_token");
-  const isLogin = token ? true : false;
+  const token = Cookies.get('accessTokenStudent');
+  const dataStudent = JSON.parse(localStorage.getItem('info_student'));
+  const isLoginStudent = token && dataStudent ? true : false;
   const handleClickLogin = () => {
     dispatch(setOpenModal(true));
   };
@@ -20,40 +21,27 @@ export function Navigate() {
     navigate(item.href);
   };
   const handleClickLogo = () => {
-    navigate("/");
+    navigate('/');
   };
   const links = [
     {
-      title: "Trang chủ",
-      href: "/",
+      title: 'Trang chủ',
+      href: '/',
     },
     {
-      title: "Tin tức",
-      href: "/news",
-    },
-    {
-      title: "Về chúng tôi",
-      href: "/aboutus",
-    },
-    {
-      title: "Tài liệu học tập",
-      href: "/documents",
+      title: 'Tài liệu tham khảo',
+      href: '/documents',
     },
   ];
   return (
     <Fragment>
-      <div className="bg-white">
-        <nav className="max-w-[95%] w-full lg:max-w-[85%] mx-auto flex justify-between items-center py-3 transition-all bg-white">
-          <div className="w-[8rem] h-[2rem] lg:w-[11rem] lg:h-[3rem] bg-transparent flex items-center justify-center">
-            <img
-              src={logo}
-              alt="logo"
-              className="hover:cursor-pointer"
-              onClick={handleClickLogo}
-            />
+      <div className='bg-white'>
+        <nav className='max-w-[95%] w-full lg:max-w-[85%] mx-auto flex justify-between items-center py-3 transition-all bg-white'>
+          <div className='w-[8rem] h-[2rem] lg:w-[13rem] bg-transparent flex items-center justify-center'>
+            <img src={logo} alt='logo' className='hover:cursor-pointer' onClick={handleClickLogo} />
           </div>
-          <div className="flex justify-center items-center gap-3 sm:gap-6 md:gap-8">
-            <ul className="hidden md:flex lg:text-xl xl:text-[1.3rem] items-center gap-3 sm:gap-6 md:gap-8">
+          <div className='flex justify-center items-center gap-3 sm:gap-6 md:gap-8'>
+            <ul className='hidden md:flex lg:text-xl xl:text-[1.3rem] items-center gap-3 sm:gap-6 md:gap-8'>
               {links.map((item) => (
                 <li
                   key={item.title}
@@ -64,16 +52,11 @@ export function Navigate() {
                 </li>
               ))}
             </ul>
-            <div className="flex items-center gap-3">
-              {isLogin && <PopoverAvatarUser />}
+            <div className='flex items-center gap-3'>
+              {isLoginStudent && <PopoverAvatarUser />}
               <PopoverSubMenu />
-              {!isLogin && (
-                <ButtonCustom
-                  title="Đăng nhập"
-                  type="primary"
-                  size="large"
-                  handleClick={handleClickLogin}
-                />
+              {!isLoginStudent && (
+                <ButtonCustom title='Đăng nhập' type='primary' size='large' handleClick={handleClickLogin} />
               )}
             </div>
           </div>

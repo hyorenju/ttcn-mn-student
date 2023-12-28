@@ -1,8 +1,17 @@
-import instane from "../instane";
+import instane from '../instane';
 
 export const adminClassApi = {
+  getClassSelection: async () => {
+    const url = '/admin/class/selection';
+    try {
+      const res = await instane.post(url);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
   getAllClass: async (values) => {
-    const url = "/admin/class/list";
+    const url = '/admin/class/list';
     try {
       const res = await instane.post(url, values);
       return res.data;
@@ -11,7 +20,7 @@ export const adminClassApi = {
     }
   },
   createClass: async (values) => {
-    const url = "/admin/class/create";
+    const url = '/admin/class/create';
     try {
       const res = await instane.post(url, values);
       return res.data;

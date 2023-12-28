@@ -1,28 +1,23 @@
-import { ModalForm, ProForm, ProFormText } from "@ant-design/pro-components";
-import { useMutation } from "@tanstack/react-query";
-import { Space } from "antd";
-import React from "react";
-import { visitor } from "../../../../API/Visistor/visitor";
-import { ButtonCustom } from "../../../../components/Button";
-import {
-  notificationError,
-  notificationSuccess,
-} from "../../../../components/Notification";
+import { visitor } from '@/API/Visistor/visitor';
+import { ButtonCustom } from '@/components/Button';
+import { messageErrorToSever } from '@/components/Message';
+import { notificationSuccess } from '@/components/Notification';
+import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components';
+import { useMutation } from '@tanstack/react-query';
+import { Space } from 'antd';
 
 export function ModalFormConfirmEmail({ open, onOpenChange }) {
   const handleAutherzation = useMutation({
-    mutationKey: ["confirmEmail"],
+    mutationKey: ['confirmEmail'],
     mutationFn: async (values) =>
       await visitor.sendRequestChangePassword({
-        link: "https://vnua-student-fita.web.app/changepassword",
+        link: 'http://localhost:3000/changepassword',
         user: values,
       }),
     onSuccess: (res) => {
       if (res && res.success === true) {
         notificationSuccess(res.data);
-      } else if (res && res.success === false) {
-        notificationError(res.error?.message);
-      }
+      } else messageErrorToSever(res, 'Thất bại');
     },
   });
   const handleClickCancel = () => {
@@ -40,7 +35,7 @@ export function ModalFormConfirmEmail({ open, onOpenChange }) {
         width={370}
         open={open}
         onOpenChange={onOpenChange}
-        title="Xác thực tài khoản"
+        title='Xác thực tài khoản'
         autoFocusFirstInput
         modalProps={{
           destroyOnClose: true,
@@ -50,20 +45,16 @@ export function ModalFormConfirmEmail({ open, onOpenChange }) {
         submitter={{
           render: (props) => {
             return [
-              <div className="flex justify-between w-full items-center">
+              <div className='flex justify-between w-full items-center'>
                 <Space size={10}>
                   <ButtonCustom
                     loading={handleAutherzation.isLoading}
-                    type="primary"
-                    title="Xác thực"
-                    key="submit"
+                    type='primary'
+                    title='Xác thực'
+                    key='submit'
                     handleClick={() => handleClickSubmit(props)}
                   />
-                  <ButtonCustom
-                    title="Hủy"
-                    key="cancel"
-                    handleClick={handleClickCancel}
-                  />
+                  <ButtonCustom title='Hủy' key='cancel' handleClick={handleClickCancel} />
                 </Space>
               </div>,
             ];
@@ -72,31 +63,31 @@ export function ModalFormConfirmEmail({ open, onOpenChange }) {
       >
         <ProForm.Group>
           <ProFormText
-            width="md"
-            name="id"
+            width='md'
+            name='id'
             required
             rules={[
               {
                 required: true,
-                message: "Không được để trống",
+                message: 'Không được để trống',
               },
             ]}
-            label="Tài khoản đăng nhập"
-            placeholder="Nhập mã sinh viên"
+            label='Tài khoản đăng nhập'
+            placeholder='Nhập mã sinh viên'
           />
 
           <ProFormText
-            width="md"
-            name="email"
+            width='md'
+            name='email'
             required
             rules={[
               {
                 required: true,
-                message: "Không được để trống",
+                message: 'Không được để trống',
               },
             ]}
-            label="Email đăng kí"
-            placeholder="example@gmail.com"
+            label='Email đăng kí'
+            placeholder='example@gmail.com'
           />
         </ProForm.Group>
       </ModalForm>

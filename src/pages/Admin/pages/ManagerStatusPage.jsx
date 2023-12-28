@@ -1,53 +1,111 @@
-import { adminStudentStatusApi } from "@/API/admin/adminStudentStatusApi";
-import { ButtonCustom } from "@/components/Button";
+import { adminSemesterApi } from '@/API/admin/adminSemesterApi';
+import { adminStatusApi } from '@/API/admin/adminStatusApi';
+import { adminStudentStatusApi } from '@/API/admin/adminStudentStatusApi';
+import { ButtonCustom } from '@/components/Button';
+import { messageErrorToSever } from '@/components/Message';
+import { notificationSuccess } from '@/components/Notification';
 import {
   DeleteOutlined,
+  DownloadOutlined,
   EditOutlined,
   MoreOutlined,
   SearchOutlined,
   TableOutlined,
+  UploadOutlined,
   UserAddOutlined,
-} from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Button,
-  Drawer,
-  Input,
-  Popconfirm,
-  Popover,
-  Space,
-  Table,
-  Tooltip,
-  Typography,
-} from "antd";
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useDebounce } from "use-debounce";
-import { ModalFormStudentStatus } from "../components/Modal";
-import { TableListStatus } from "../components/Table";
+} from '@ant-design/icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Drawer, Input, Popconfirm, Popover, Select, Space, Table, Tooltip, Typography, Upload } from 'antd';
+import { useState } from 'react';
+import Highlighter from 'react-highlight-words';
+import { useDebounce } from 'use-debounce';
+import { ModalFormStudentStatus } from '../components/Modal';
+import { TableListStatus } from '../components/Table';
 
-function ManagerStatusPage(props) {
+function ManagerStatusPage() {
+  const queryClient = useQueryClient();
   const { Title } = Typography;
+  const [valueSearchTermId, setValueSearchTermId] = useState(null);
+  const [valueSearchStatusId, setValueSearchStatusId] = useState(null);
+  const [valueSearchStudentId, setValueSearchStudentId] = useState(null);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [openModal, setOpenModal] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [dataStudent, setDataStudent] = useState({});
-  const [valueSearchParams, setValueSearchParams] = useSearchParams("");
-  const [id] = useDebounce(valueSearchParams.get("studentId"), 600);
+  const [studentId] = useDebounce(valueSearchStudentId, 600);
 
   const { data, isFetching } = useQuery({
     staleTime: 60 * 5000,
     cacheTime: 5 * 60 * 5000,
-    queryKey: ["studentStatusList", pageCurrent, pageSize, id],
-    queryFn: async () =>
-      await adminStudentStatusApi.getAllStudentStatus({
-        studentId: id,
+    queryKey: ['studentStatusList', pageCurrent, pageSize, studentId, valueSearchTermId, valueSearchStatusId],
+    queryFn: () =>
+      adminStudentStatusApi.getAllStudentStatus({
+        studentId: studentId,
         page: pageCurrent,
         size: pageSize,
+        filter: {
+          termId: valueSearchTermId,
+          statusId: valueSearchStatusId,
+        },
       }),
   });
+  const getTermList = useQuery({
+    staleTime: 10 * 60 * 1000,
+    cacheTime: 15 * 60 * 1000,
+    queryKey: ['getTermList'],
+    queryFn: () => adminSemesterApi.getAllTermSelection(),
+    onSuccess: (res) => {
+      if (res && res.success === false) {
+        messageErrorToSever(res, 'Lấy danh sách học kỳ lỗi');
+      }
+    },
+  });
+  const getStatusList = useQuery({
+    staleTime: 10 * 60 * 1000,
+    cacheTime: 15 * 60 * 1000,
+    queryKey: ['getStatusList'],
+    queryFn: () => adminStatusApi.getStatusSelect(),
+    onSuccess: (res) => {
+      if (res && res.success === false) {
+        messageErrorToSever(res, 'Lấy danh sách tình trạng lỗi');
+      }
+    },
+  });
+  const deleteStudentStatus = useMutation({
+    mutationKey: ['deleteStudentStatus'],
+    mutationFn: (id) => adminStudentStatusApi.deleteStudentStatus(id),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        queryClient.invalidateQueries({
+          queryKey: ['studentStatusList', pageCurrent, pageSize, studentId],
+          exact: true,
+        });
+        notificationSuccess('Xóa tình trạng sinh viên thành công');
+      } else messageErrorToSever(res, 'Xóa tình trạng sinh viên thất bại');
+    },
+  });
+  const importStudentStatusList = useMutation({
+    mutationKey: ['importStudentStatusList'],
+    mutationFn: (file) => {
+      const formData = new FormData();
+      formData.append('file', file.file);
+    },
+    onSuccess: (res) => {},
+  });
+  const exportStudentFormExcel = useMutation({
+    mutationKey: ['exportStudentStatusList'],
+    mutationFn: () => {},
+    onSuccess: () => {},
+  });
 
+  const handleClickBtnExportFileStudentStatusList = () => {
+    exportStudentFormExcel.mutate();
+  };
+  const filterOptionTerm = (input, option) => (option?.value ?? '').toLowerCase().includes(input.toLowerCase());
+  const optionTerm = getTermList.data?.data?.items.map((item) => ({ label: item.id, value: item.id }));
+  const optionStatus = getStatusList.data?.data?.items.map((item) => ({ label: item.name, value: item.id }));
+  const filterOptionStatus = (input, option) => (option?.value ?? '').toLowerCase().includes(input.toLowerCase());
   const handleChangePaginationTable = (page, size) => {
     setPageCurrent(page);
     setPageSize(size);
@@ -56,83 +114,194 @@ function ManagerStatusPage(props) {
     setOpenModal(true);
     setDataStudent(record);
   };
-  const handleConfirmDeleteStatusStudent = () => {};
+  const handleConfirmDeleteStatusStudent = (id) => {
+    deleteStudentStatus.mutate(id);
+  };
   const handleClickShowStatusList = () => {
     setOpenDrawer(true);
   };
   const handleClickAddStatus = (record) => {
     setOpenModal(true);
   };
-  const handleChangeStudentId = (e) => {
-    const studentId = e.target.value;
-    if (studentId) {
-      setValueSearchParams({ studentId });
-      setPageCurrent(1);
-    } else {
-      setValueSearchParams({});
-    }
+  const handleChangeStudentId = (e) => setValueSearchStudentId(e.target.value);
+  const handleChangeSelectTermId = (e) => setValueSearchTermId(e);
+  const handleChangeSelectStatusId = (e) => setValueSearchStatusId(e);
+
+  const handleClickResetFilterStudentId = () => setValueSearchStudentId(null);
+  const handleClickCloseFilterStudentId = (close) => close();
+
+  const handleClickResetFilterTermId = () => setValueSearchTermId(null);
+  const handleClickCloseFilterTermId = (close) => close();
+
+  const handleClickResetFilterStatusId = () => setValueSearchStatusId(null);
+  const handleClickCloseFilterStatusId = (close) => close();
+
+  const props = {
+    name: 'file',
+    multiple: false,
+    showUploadList: false,
+    customRequest: (file) => importStudentStatusList.mutate(file),
+    beforeUpload: (file) => {
+      const checkSize = file.size / 1024 / 1024 < 5;
+      const isXLXS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      if (!isXLXS) {
+        messageErrorToSever(`${file.name} không phải là một file excel`);
+        return false;
+      }
+      if (!checkSize) {
+        messageErrorToSever(`File tải lên không được quá 5MB`);
+        return false;
+      }
+      return true;
+    },
   };
+
   const columns = [
     {
-      title: "Mã sinh viên",
-      dataIndex: ["student", "id"],
-      align: "center",
+      title: 'Mã học kỳ',
+      dataIndex: ['termId'],
+      align: 'center',
+      key: 'termId',
+      filterDropdown: ({ close }) => (
+        <div className='p-3 flex flex-col gap-2 w-[200px]'>
+          <Select
+            showSearch
+            value={valueSearchTermId}
+            options={optionTerm}
+            loading={getTermList.isLoading}
+            filterOption={filterOptionTerm}
+            placeholder='Chọn mã học kỳ tìm kiếm'
+            optionFilterProp='children'
+            onChange={handleChangeSelectTermId}
+          />
+          <Space>
+            <ButtonCustom handleClick={handleClickResetFilterTermId} size='small' title={'Reset'} />
+            <Button type='link' size='small' onClick={() => handleClickCloseFilterTermId(close)}>
+              Đóng
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: () => (
+        <Tooltip title='Tìm kiếm theo mã học kỳ'>
+          <SearchOutlined className={`${valueSearchTermId ? 'text-blue-500' : undefined}`} />
+        </Tooltip>
+      ),
     },
     {
-      title: "Họ đệm",
-      dataIndex: ["student", "surname"],
-      align: "center",
+      title: 'Mã sinh viên',
+      dataIndex: ['student', 'id'],
+      align: 'center',
+      filterDropdown: ({ close }) => (
+        <div className='p-3'>
+          <Input
+            placeholder={'Nhập mã sinh viên tìm kiếm'}
+            value={valueSearchStudentId}
+            onChange={handleChangeStudentId}
+            className='w-[250px] mb-3 block'
+          />
+          <Space>
+            <ButtonCustom handleClick={handleClickResetFilterStudentId} size='small' title={'Reset'} />
+            <Button type='link' size='small' onClick={() => handleClickCloseFilterStudentId(close)}>
+              Đóng
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: () => <SearchOutlined className={`${studentId ? 'text-blue-500' : undefined} `} />,
+      render: (text) =>
+        valueSearchStudentId === studentId ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[valueSearchStudentId]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
     },
     {
-      title: "Tên",
-      dataIndex: ["student", "lastName"],
-      align: "center",
+      title: 'Họ và tên',
+      align: 'center',
+      width: '15%',
+      render: (_, record) => record && <p>{`${record.student?.surname} ${record.student?.lastName}`}</p>,
     },
     {
-      title: "Lớp",
-      dataIndex: ["student", "aclass", "id"],
-      align: "center",
+      title: 'Mã lớp',
+      dataIndex: ['student', 'aclass', 'id'],
+      align: 'center',
     },
     {
-      title: "Trạng thái",
-      dataIndex: ["status", "name"],
-      align: "center",
+      title: 'Tình trạng',
+      dataIndex: ['status', 'name'],
+      align: 'center',
+      filterDropdown: ({ close }) => (
+        <div className='p-3 flex flex-col gap-2 w-[250px]'>
+          <Select
+            showSearch
+            value={valueSearchStatusId}
+            options={optionStatus}
+            loading={getStatusList.isLoading}
+            filterOption={filterOptionStatus}
+            placeholder='Chọn tình trạng tìm kiếm'
+            optionFilterProp='children'
+            onChange={handleChangeSelectStatusId}
+          />
+          <Space>
+            <ButtonCustom handleClick={handleClickResetFilterStatusId} size='small' title={'Reset'} />
+            <Button type='link' size='small' onClick={() => handleClickCloseFilterStatusId(close)}>
+              Đóng
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: () => (
+        <Tooltip title='Tìm kiếm theo mã học kỳ'>
+          <SearchOutlined className={`${valueSearchStatusId ? 'text-blue-500' : undefined}`} />
+        </Tooltip>
+      ),
     },
     {
-      title: "Thời gian",
-      dataIndex: "time",
-      align: "center",
+      title: 'Thời gian',
+      dataIndex: 'time',
+      key: 'created_at',
+      align: 'center',
     },
     {
-      title: "Ghi chú",
-      dataIndex: "note",
-      align: "center",
+      title: 'Ghi chú',
+      dataIndex: 'note',
+      align: 'center',
     },
     {
-      align: "center",
-      width: "8%",
+      align: 'center',
+      width: '8%',
       render: (index, record) => (
         <Popover
-          trigger={"click"}
-          placement="left"
+          trigger={'click'}
+          placement='left'
           content={
-            <Space size={10} key={index} direction="vertical">
+            <Space size={10} key={index} direction='vertical'>
               <ButtonCustom
-                title={"Chỉnh sửa"}
+                title={'Chỉnh sửa'}
                 icon={<EditOutlined />}
                 handleClick={() => handleClickBtnEditStatusStudent(record)}
               />
               <Popconfirm
-                title="Xóa sinh viên"
-                description={`Bạn có chắc chắn muốn xóa sinh viên ${record.id} ?`}
+                title='Xóa sinh viên'
+                description={`Bạn có chắc chắn muốn xóa sinh viên ${record.student.id} ?`}
                 icon={<DeleteOutlined />}
-                okText="Xóa"
-                okType="danger"
+                okText='Xóa'
+                okType='danger'
                 onConfirm={() => handleConfirmDeleteStatusStudent(record.id)}
               >
                 <Button
                   danger
-                  className="flex justify-center items-center bg-white"
+                  loading={deleteStudentStatus.isLoading}
+                  className='flex justify-center items-center bg-white'
                   icon={<DeleteOutlined />}
                 >
                   Xóa
@@ -141,10 +310,7 @@ function ManagerStatusPage(props) {
             </Space>
           }
         >
-          <Button
-            className="flex items-center justify-center"
-            icon={<MoreOutlined />}
-          />
+          <Button className='flex items-center justify-center' icon={<MoreOutlined />} />
         </Popover>
       ),
     },
@@ -152,38 +318,29 @@ function ManagerStatusPage(props) {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-3 relative">
-        <Tooltip title="Tìm kiếm sinh viên">
-          <Input
-            prefix={<SearchOutlined className="opacity-60 mr-1" />}
-            placeholder="Nhập mã sinh viên"
-            className="shadow-sm w-[250px]"
-            onChange={handleChangeStudentId}
-          />
-        </Tooltip>
-        <Title
-          className="hidden xl:block"
-          level={3}
-          style={{ textTransform: "uppercase", marginBottom: 0 }}
-        >
-          Quản lí tình trạng sinh viên
+      <div className='flex justify-between items-center mb-3 relative'>
+        <ButtonCustom title='Danh sách tình trạng' handleClick={handleClickShowStatusList} icon={<TableOutlined />} />
+        <Title className='hidden xl:block' level={3} style={{ textTransform: 'uppercase', marginBottom: 0 }}>
+          Quản lý tình trạng sinh viên
         </Title>
         <Space>
+          <Upload {...props}>
+            <ButtonCustom
+              title='Thêm danh sách tình trạng'
+              loading={importStudentStatusList.isLoading}
+              icon={<UploadOutlined />}
+            />
+          </Upload>
           <ButtonCustom
-            title="Danh sách tình trạng"
-            handleClick={handleClickShowStatusList}
-            icon={<TableOutlined />}
-          />
-          <ButtonCustom
-            title="Thêm tình trạng sinh viên"
+            title='Thêm tình trạng sinh viên'
             handleClick={handleClickAddStatus}
             icon={<UserAddOutlined />}
           />
         </Space>
       </div>
-      <div className="relative">
+      <div className='relative'>
         <Table
-          rowKey="id"
+          rowKey='id'
           loading={isFetching}
           scroll={{
             y: 630,
@@ -200,6 +357,14 @@ function ManagerStatusPage(props) {
             showSizeChanger: true,
           }}
         />
+        <div className='absolute bottom-0 left-0'>
+          <ButtonCustom
+            title='Xuất danh sách tình trạng sinh viên'
+            loading={exportStudentFormExcel.isLoading}
+            handleClick={handleClickBtnExportFileStudentStatusList}
+            icon={<DownloadOutlined />}
+          />
+        </div>
       </div>
       <ModalFormStudentStatus
         open={openModal}
@@ -212,11 +377,8 @@ function ManagerStatusPage(props) {
         dataStudent={dataStudent}
       />
       <Drawer
-        extra={
-          <h1 className="text-black font-medium text-xl">
-            Danh sách trạng thái
-          </h1>
-        }
+        extra={<h1 className='text-black font-medium text-xl'>Danh sách tình trạng</h1>}
+        placement='left'
         open={openDrawer}
         width={1100}
         maskClosable={false}

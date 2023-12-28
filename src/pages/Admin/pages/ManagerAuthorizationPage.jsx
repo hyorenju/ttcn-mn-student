@@ -1,9 +1,7 @@
-import { adminAdminApi } from "@/API/admin/adminAdminApi";
-import { ButtonCustom } from "@/components/Button";
-import {
-  notificationError,
-  notificationSuccess,
-} from "@/components/Notification";
+import { adminAdminApi } from '@/API/admin/adminAdminApi';
+import { ButtonCustom } from '@/components/Button';
+import { messageErrorToSever } from '@/components/Message';
+import { notificationSuccess } from '@/components/Notification';
 import {
   deleteAdmin,
   setAdminId,
@@ -11,8 +9,8 @@ import {
   setPageCurrent,
   setPageSize,
   setTotal,
-} from "@/redux/Admin/adminSilce";
-import { addAdmin } from "@/redux/Trash/adminTrashSlice";
+} from '@/redux/Admin/adminSilce';
+import { addAdmin } from '@/redux/Trash/adminTrashSlice';
 import {
   DeleteFilled,
   DeleteOutlined,
@@ -20,70 +18,56 @@ import {
   SearchOutlined,
   SwapOutlined,
   UserAddOutlined,
-} from "@ant-design/icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  Button,
-  Drawer,
-  Input,
-  Popconfirm,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-  Typography,
-} from "antd";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useDebounce } from "use-debounce";
-import { DrawerAdminAuther } from "../components/Drawer";
-import { ModalFormAdmin, ModalTrashCanAdmin } from "../components/Modal";
+} from '@ant-design/icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Button, Drawer, Input, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { useState } from 'react';
+import Highlighter from 'react-highlight-words';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
+import { DrawerAdminAuther } from '../components/Drawer';
+import { ModalFormAdmin, ModalTrashCanAdmin } from '../components/Modal';
 
 function ManagerAuthorizationPage(props) {
   const { Title } = Typography;
   const dispatch = useDispatch();
-  const { adminList, adminId, total, pageCurrent, pageSize } = useSelector(
-    (state) => state.adminList
-  );
+  const { adminList, adminId, total, pageCurrent, pageSize } = useSelector((state) => state.adminList);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openModalFormAdmin, setOpenModalFormAdmin] = useState(false);
   const [dataAdmin, setDataAdmin] = useState({});
   const [openModalTrush, setOpenModalTrush] = useState(false);
-  const [required, setRequired] = useState(true);
-  const [valueSearchAdmin, setValueSearchAdmin] = useState("");
+  const [valueSearchAdmin, setValueSearchAdmin] = useSearchParams('');
+  const [adminIdSearch] = useDebounce(valueSearchAdmin.get('adminId'), 750);
+  dispatch(setAdminId(adminIdSearch));
 
   // handle delete admin
   const handleConfirmDeleteAdmin = useMutation({
-    mutationFn: async (id) => await adminAdminApi.deleteAdmin(id),
-    onSuccess: (data) => {
-      if (data && data.success) {
-        notificationSuccess("Xóa thành công");
-        dispatch(deleteAdmin(data.data.admin));
-        dispatch(addAdmin(data.data));
-      }
-    },
-    onError: (data) => {
-      notificationError(data?.data?.data);
+    mutationFn: (id) => adminAdminApi.deleteAdmin(id),
+    onSuccess: (res) => {
+      if (res && res.success) {
+        notificationSuccess('Xóa quản trị viên thành công');
+        dispatch(deleteAdmin(res.data?.admin));
+        dispatch(addAdmin(res.data));
+      } else messageErrorToSever(res, 'Xóa quản trị viên thất bại');
     },
   });
   // handle get admin list
-  const [id] = useDebounce(valueSearchAdmin, 750);
-  dispatch(setAdminId(id));
 
   const getAdminList = useQuery({
     cacheTime: 10 * 60 * 1000,
     keepPreviousData: true,
-    queryKey: ["adminList", pageSize, pageCurrent, adminId],
-    queryFn: async () =>
-      await adminAdminApi.getAllAdmin({
+    queryKey: ['adminList', pageSize, pageCurrent, adminId],
+    queryFn: () =>
+      adminAdminApi.getAllAdmin({
         id: adminId,
         page: pageCurrent,
         size: pageSize,
       }),
     onSuccess: (res) => {
       if (res && res.success) {
-        dispatch(setTotal(res.data.total));
-        dispatch(setDataAdminList(res.data.items));
+        dispatch(setTotal(res.data?.total));
+        dispatch(setDataAdminList(res.data?.items));
       }
     },
   });
@@ -91,66 +75,111 @@ function ManagerAuthorizationPage(props) {
     setOpenModalTrush(true);
   };
   const handleClickEdit = (record) => {
-    setRequired(false);
     setDataAdmin(record);
     setOpenModalFormAdmin(true);
   };
-  const role = (roleId) => {
-    if (roleId === "ADMIN") {
-      return <Tag color="purple">ADMIN</Tag>;
-    } else if (roleId === "MOD") {
-      return <Tag color="lime">MOD</Tag>;
-    } else return <Tag color="red">SUPERADMIN</Tag>;
+  const role = (roleName) => {
+    switch (roleName) {
+      case 'Quản trị viên cấp cao':
+        return <Tag color='red'>Quản trị viên cấp cao</Tag>;
+      case 'Quản trị viên':
+        return <Tag color='cyan'>Quản trị viên</Tag>;
+      case 'Kiểm duyệt viên':
+        return <Tag color='blue-inverse'>Kiểm duyệt viên</Tag>;
+      case 'Lớp trưởng':
+        return <Tag color='geekblue-inverse'>Lớp trưởng</Tag>;
+      default:
+        return 'Vai trò không có trong hệ thống';
+    }
   };
   const handleChangePaginationTable = (page, size) => {
     dispatch(setPageSize(size));
     dispatch(setPageCurrent(page));
   };
-  const handleChangAdminId = (e) => setValueSearchAdmin(e.target.value);
+  const handleChangAdminId = (e) => {
+    const adminId = e.target.value;
+    if (adminId) {
+      setValueSearchAdmin({ adminId });
+    } else {
+      setValueSearchAdmin({});
+    }
+  };
+  const handleClickResetFilterAdminId = () => setValueSearchAdmin({});
+  const handleClickCloseFilterAdminId = (close) => close();
   const columns = [
     {
-      title: "Tên đăng nhập",
-      dataIndex: "id",
-      align: "center",
+      title: 'Tên đăng nhập',
+      dataIndex: 'id',
+      align: 'center',
+      filterDropdown: ({ close }) => (
+        <div className='p-3'>
+          <Input
+            placeholder={'Nhập mã admin tìm kiếm'}
+            value={valueSearchAdmin.get('adminId')}
+            onChange={handleChangAdminId}
+            className='w-[250px] mb-3 block'
+          />
+          <Space>
+            <ButtonCustom handleClick={handleClickResetFilterAdminId} size='small' title={'Reset'} />
+            <Button type='link' size='small' onClick={() => handleClickCloseFilterAdminId(close)}>
+              Đóng
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <Tooltip title='Tìm kiếm theo mã admin'>
+          <SearchOutlined className={`${filtered ? 'text-[#1677ff]' : undefined} text-md p-1`} />
+        </Tooltip>
+      ),
+      render: (text) =>
+        valueSearchAdmin.get('adminId') === adminIdSearch ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[valueSearchAdmin.get('adminId')]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
     },
     {
-      title: "Tên người dùng",
-      dataIndex: "name",
-      align: "center",
+      title: 'Tên người dùng',
+      dataIndex: 'name',
+      align: 'center',
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      align: "center",
+      title: 'Email',
+      dataIndex: 'email',
+      align: 'center',
     },
     {
-      title: "Vai trò",
-      align: "center",
-      render: (e, record, idx) => role(record?.roleId),
+      title: 'Vai trò',
+      align: 'center',
+      render: (e, record, idx) => role(record?.role?.name),
     },
     {
-      title: "Tùy chọn",
-      align: "center",
+      title: 'Tùy chọn',
+      align: 'center',
       render: (e, record, index) => (
         <Button.Group key={index}>
-          <ButtonCustom
-            title={"Chỉnh sửa"}
-            icon={<EditOutlined />}
-            handleClick={() => handleClickEdit(record)}
-          />
+          <ButtonCustom title={'Chỉnh sửa'} icon={<EditOutlined />} handleClick={() => handleClickEdit(record)} />
           <Popconfirm
-            title="Bạn có chắc chắn muốn xóa sinh viên này ?"
+            title='Bạn có chắc chắn muốn xóa ?'
             icon={<DeleteOutlined />}
-            okText="Xóa"
-            okType="danger"
+            okText='Xóa'
+            okType='danger'
             onConfirm={() => handleConfirmDeleteAdmin.mutate(record.id)}
           >
             <Button
-              className="flex justify-center items-center text-md shadow-md"
+              className='flex justify-center items-center text-md shadow-md'
               icon={<DeleteOutlined />}
-              type="primary"
+              type='primary'
               danger
-              loading={handleConfirmDeleteAdmin.isLoading}
             >
               Xóa
             </Button>
@@ -161,23 +190,9 @@ function ManagerAuthorizationPage(props) {
   ];
   return (
     <div>
-      <div className="flex justify-between mb-3">
-        <Space>
-          <Tooltip title="Tìm kiếm admin">
-            <Input
-              prefix={<SearchOutlined className="opacity-60 mr-1" />}
-              placeholder="Nhập mã admin"
-              className="shadow-sm w-[230px]"
-              onChange={handleChangAdminId}
-            />
-          </Tooltip>
-          <ButtonCustom
-            title="Thùng rác"
-            icon={<DeleteFilled />}
-            handleClick={handleClickBtnTrush}
-          />
-        </Space>
-        <Title level={3} className="uppercase absolute left-2/4">
+      <div className='flex justify-between mb-3'>
+        <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
+        <Title level={3} className='uppercase absolute left-2/4'>
           Danh sách admin
         </Title>
         <Space>
@@ -186,37 +201,32 @@ function ManagerAuthorizationPage(props) {
             handleClick={() => {
               setOpenDrawer(true);
             }}
-            title={"Phân quyền"}
+            title={'Phân quyền'}
           />
           <ButtonCustom
             icon={<UserAddOutlined />}
             handleClick={() => {
               setOpenModalFormAdmin(true);
             }}
-            title="Thêm admin"
+            title='Thêm quản trị viên'
           />
         </Space>
       </div>
       <ModalFormAdmin
-        onSuccess={() => {
-          setOpenModalFormAdmin(false);
-        }}
         dataAdmin={dataAdmin}
         openForm={openModalFormAdmin}
         onChangeClickOpen={(open) => {
           if (!open) {
             setDataAdmin({});
-            setRequired(true);
             setOpenModalFormAdmin(false);
           }
         }}
-        required={required}
       />
       <Table
         scroll={{
           y: 630,
         }}
-        rowKey="id"
+        rowKey='id'
         loading={getAdminList.isFetching}
         bordered={true}
         dataSource={adminList}
@@ -230,16 +240,8 @@ function ManagerAuthorizationPage(props) {
           showSizeChanger: true,
         }}
       />
-      <ModalTrashCanAdmin
-        open={openModalTrush}
-        close={() => setOpenModalTrush(false)}
-      />
-      <Drawer
-        placement="right"
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-        width={1300}
-      >
+      <ModalTrashCanAdmin open={openModalTrush} close={() => setOpenModalTrush(false)} />
+      <Drawer placement='right' open={openDrawer} onClose={() => setOpenDrawer(false)} width={1300}>
         <DrawerAdminAuther />
       </Drawer>
     </div>
