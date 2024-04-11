@@ -37,4 +37,22 @@ export const adminStudentStatusApi = {
       throw new Error(error);
     }
   },
+  importStudentStatus: async (value) => {
+    const url = `/admin/student-status/import`;
+    try {
+      const res = await instane.post(url, value);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  exportStudentStatus: async (value) => {
+    const url = `/admin/student-status/export`;
+    try {
+      const res = await instane.post(url, value);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };

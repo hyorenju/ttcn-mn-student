@@ -148,6 +148,17 @@ export function FormInfoUser() {
               fieldProps={{
                 size: 'large',
               }}
+              width='md'
+              name='phoneNumber2'
+              label=<p className='text-base'>Số điện thoại dự phòng</p>
+              placeholder='+84'
+            />
+          </Col>
+          <Col>
+            <ProFormText
+              fieldProps={{
+                size: 'large',
+              }}
               disabled
               width='md'
               rules={[
@@ -229,9 +240,9 @@ export function FormInfoUser() {
                 size: 'large',
               }}
               width='md'
+              disabled
               name='familySituation'
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
-              label=<p className='text-base'>Tình trạng</p>
+              label=<p className='text-base'>Hoàn cảnh gia đình</p>
             />
           </Col>
         </Row>

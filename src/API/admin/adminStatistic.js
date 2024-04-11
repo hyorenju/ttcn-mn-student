@@ -38,8 +38,17 @@ export const adminStatistic = {
       throw new Error(error);
     }
   },
-  getDataStatsticFacultyColumn: async (values) => {
-    const url = `/admin/statistic/faculty/column`;
+  getDataStatsticFacultyColumn1: async (values) => {
+    const url = `/admin/statistic/faculty/column/interrupt`;
+    try {
+      const res = await instane.post(url, values);
+      if (res) return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  getDataStatsticFacultyColumn2: async (values) => {
+    const url = `/admin/statistic/faculty/column/io`;
     try {
       const res = await instane.post(url, values);
       if (res) return res.data;

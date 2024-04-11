@@ -8,8 +8,7 @@ import { ChartPieBasic } from '../Chart/ChartPieBasic';
 
 export function CourseStatistical(props) {
   const [valueSubmit, setValueSubmit] = useState({
-    start: '',
-    end: '',
+    time: '',
   });
   const [courseId, setCourseId] = useState('');
   const [dataStatistic, setDataStatistic] = useState([]);
@@ -35,7 +34,7 @@ export function CourseStatistical(props) {
     <div>
       <div className='flex gap-4'>
         <Space>
-          Mã lớp:
+          Mã khóa:
           <Input
             size='large'
             placeholder='Nhập mã khóa. Ví dụ: 65'
@@ -44,25 +43,14 @@ export function CourseStatistical(props) {
           />
         </Space>
         <Space>
-          Từ học kỳ:
+          Chọn học kỳ:
           <Select
-            value={valueSubmit.start}
+            value={valueSubmit.time}
             options={optionsTerm}
-            className='w-[200px]'
+            className='w-[300px]'
             size='large'
-            placeholder='Chọn học kỳ bắt đầu'
-            onChange={(e) => setValueSubmit((prev) => ({ ...prev, start: e }))}
-          />
-        </Space>
-        <Space>
-          Đến học kỳ:
-          <Select
-            value={valueSubmit.end}
-            options={optionsTerm}
-            className='w-[200px]'
-            size='large'
-            placeholder='Chọn học kỳ kết thúc'
-            onChange={(e) => setValueSubmit((prev) => ({ ...prev, end: e }))}
+            placeholder='Chọn học kỳ'
+            onChange={(e) => setValueSubmit((prev) => ({ ...prev, time: e }))}
           />
         </Space>
         <ButtonCustom title={'Tìm kiếm'} size={'large'} type='primary' handleClick={() => handleSubmit.mutate()} />

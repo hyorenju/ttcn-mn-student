@@ -1,14 +1,20 @@
 import { adminPointApi } from '@/API/admin/adminPointApi';
+import { adminSchoolYearApi } from '@/API/admin/adminSchoolYear';
 import { ButtonCustom } from '@/components/Button';
 import { messageErrorToSever } from '@/components/Message';
 import { notificationSuccess } from '@/components/Notification/NotificationSuccess';
 import { createPointOfYear, updatePointOfYear } from '@/redux/Point/pointOfYear';
-import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components';
-import { useMutation } from '@tanstack/react-query';
+import { ModalForm, ProForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Space } from 'antd';
 import { useDispatch } from 'react-redux';
 
 export function ModalFormPointOfYear({ openForm, onChangeClickOpen, dataPoint }) {
+  const { data } = useQuery({
+    queryKey: ['selectYear'],
+    queryFn: () => adminSchoolYearApi.getYear(),
+  });
+  const optionSearch = data?.data?.items.map((item) => ({ label: item.id, value: item.id }));
   const dispatch = useDispatch();
   const handleCreatePoint = useMutation({
     mutationKey: ['createPoint'],
@@ -80,10 +86,12 @@ export function ModalFormPointOfYear({ openForm, onChangeClickOpen, dataPoint })
             placeholder='Nhập mã sinh viên. Ví dụ: 655103'
             disabled={dataPoint.id ? true : false}
           />
-          <ProFormText
+          <ProFormSelect
+            options={optionSearch}
+            showSearch
             rules={[{ required: true, message: 'Không thể để trống' }]}
             width='md'
-            name='year'
+            name={['year', 'id']}
             label='Năm học'
             placeholder='Nhập năm học. Ví dụ: 2022-2023'
             disabled={dataPoint.id ? true : false}

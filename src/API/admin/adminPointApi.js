@@ -150,4 +150,13 @@ export const adminPointApi = {
       throw new Error(error);
     }
   },
+  exportPointOfYear: async (values) => {
+    const url = `/admin/point-annual/export`;
+    try {
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };

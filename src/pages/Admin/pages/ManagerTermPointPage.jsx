@@ -54,6 +54,7 @@ function ManagerTermPointPage() {
   const [openModalFormPoint, setOpenModalFormPoint] = useState(false);
   const [studentIdDebounce] = useDebounce(valueSearchStudentId, 750);
   dispatch(setStudentId(studentIdDebounce));
+  const roleId = JSON.parse(localStorage.getItem('roleId'));
 
   // Handle get data points
   const getDataPoint = useQuery({
@@ -410,55 +411,68 @@ function ManagerTermPointPage() {
       fixed: 'right',
       align: 'center',
       width: '4%',
-      render: (e, record, idx) => (
-        <Popover
-          key={idx}
-          trigger={'click'}
-          placement='left'
-          content={
-            <Space direction='vertical'>
-              <ButtonCustom title='Chỉnh sửa' icon={<EditOutlined />} handleClick={() => handleEditPointTerm(record)} />
-              <Popconfirm
-                title={`Bạn có chắc chắn muốn xóa điểm của sinh viên ${record.student.id} trong học kỳ ${record.term}`}
-                icon={<DeleteOutlined />}
-                okText='Xóa'
-                okType='danger'
-                onConfirm={() => handleConfirmDeletePoint(record.id)}
-              >
-                <Button
-                  danger
-                  loading={deletePointTerm.isLoading}
-                  className='flex justify-center items-center text-md shadow-md'
+      render: (e, record, idx) =>
+        roleId !== 'MOD' && (
+          <Popover
+            key={idx}
+            trigger={'click'}
+            placement='left'
+            content={
+              <Space direction='vertical'>
+                <ButtonCustom
+                  title='Chỉnh sửa'
+                  icon={<EditOutlined />}
+                  handleClick={() => handleEditPointTerm(record)}
+                />
+                <Popconfirm
+                  title={`Bạn có chắc chắn muốn xóa điểm của sinh viên ${record.student.id} trong học kỳ ${record.term}`}
                   icon={<DeleteOutlined />}
+                  okText='Xóa'
+                  okType='danger'
+                  onConfirm={() => handleConfirmDeletePoint(record.id)}
                 >
-                  Xóa
-                </Button>
-              </Popconfirm>
-            </Space>
-          }
-        >
-          <Button className='flex items-center justify-center  bg-white' icon={<MoreOutlined />} />
-        </Popover>
-      ),
+                  <Button
+                    danger
+                    loading={deletePointTerm.isLoading}
+                    className='flex justify-center items-center text-md shadow-md'
+                    icon={<DeleteOutlined />}
+                  >
+                    Xóa
+                  </Button>
+                </Popconfirm>
+              </Space>
+            }
+          >
+            <Button className='flex items-center justify-center  bg-white' icon={<MoreOutlined />} />
+          </Popover>
+        ),
     },
   ];
   return (
     <div>
-      <div className='flex justify-between items-center mb-3'>
-        <Space>
-          <ButtonCustom title='Xóa hết' icon={<UsergroupDeleteOutlined />} type='primary' disabled={!hasSelected} />
-          <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
-          <Popover placement='bottom' content={<ContentPopoverPoint />} trigger='click'>
-            <Button
-              icon={<FilterOutlined />}
-              className={`${
-                filter.point || filter.accPoint || filter.traningPoint ? 'text-blue-500' : undefined
-              } flex justify-center items-center text-md bg-white`}
-            >
-              Lọc theo khoảng điểm
-            </Button>
-          </Popover>
-        </Space>
+      <div
+        className={
+          roleId !== 'MOD' ? 'flex justify-between items-center mb-3' : 'flex justify-center items-center mb-3'
+        }
+      >
+        {roleId !== 'MOD' && (
+          <Space>
+            <ButtonCustom title='Xóa hết' icon={<UsergroupDeleteOutlined />} type='primary' disabled={!hasSelected} />
+            {roleId === 'SUPERADMIN' && (
+              <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
+            )}
+            <Popover placement='bottom' content={<ContentPopoverPoint />} trigger='click'>
+              <Button
+                icon={<FilterOutlined />}
+                className={`${
+                  filter.point || filter.accPoint || filter.traningPoint ? 'text-blue-500' : undefined
+                } flex justify-center items-center text-md bg-white`}
+              >
+                Lọc theo khoảng điểm
+              </Button>
+            </Popover>
+          </Space>
+        )}
         <Title
           style={{
             textAlign: 'center',
@@ -470,12 +484,18 @@ function ManagerTermPointPage() {
         >
           Danh sách điểm học kỳ
         </Title>
-        <Space>
-          <Upload {...props}>
-            <ButtonCustom title={'Thêm danh sách điểm'} icon={<UploadOutlined />} loading={importFileData.isLoading} />
-          </Upload>
-          <ButtonCustom icon={<PlusCircleOutlined />} handleClick={handleClickAddPointTerm} title={'Thêm điểm'} />
-        </Space>
+        {roleId !== 'MOD' && (
+          <Space>
+            <Upload {...props}>
+              <ButtonCustom
+                title={'Thêm danh sách điểm'}
+                icon={<UploadOutlined />}
+                loading={importFileData.isLoading}
+              />
+            </Upload>
+            <ButtonCustom icon={<PlusCircleOutlined />} handleClick={handleClickAddPointTerm} title={'Thêm điểm'} />
+          </Space>
+        )}
       </div>
       <div className='relative'>
         <Table
@@ -501,7 +521,7 @@ function ManagerTermPointPage() {
             showSizeChanger: true,
           }}
         />
-        {pointList && (
+        {pointList.length > 0 && (
           <div className='absolute bottom-3 left-0'>
             <ButtonCustom
               title='Xuất danh sách điểm'
@@ -523,7 +543,7 @@ function ManagerTermPointPage() {
         }}
       />
       <ModalShowError open={openModalError} setOpen={(open) => setOpenModalError(open)} dataError={dataError} />
-      <ModalTrashCanPoint open={openModalTrush} close={() => setOpenModalTrush(false)} />
+      {roleId === 'SUPERADMIN' && <ModalTrashCanPoint open={openModalTrush} close={() => setOpenModalTrush(false)} />}
     </div>
   );
 }

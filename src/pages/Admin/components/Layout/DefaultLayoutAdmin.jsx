@@ -37,8 +37,8 @@ export function DefaultLayoutAdmin(props) {
           getItem('Quản lý sinh viên', `/manage/students`),
           getItem('Quản lý tình trạng sinh viên', `/manage/status`),
           getItem('Quản lý điểm', null, null, [
-            getItem('Theo kỳ', `//manage/points-term`),
-            getItem('Theo năm', `/manage/point-year`),
+            getItem('Theo kỳ', `/manage/points-term`),
+            getItem('Theo năm', `/manage/points-year`),
           ]),
         ];
       case 'SUPERADMIN':
@@ -59,8 +59,12 @@ export function DefaultLayoutAdmin(props) {
         ];
       case 'MOD':
         return [
-          getItem('Quản lý hiển thị', null, null, [getItem('Lỗi nhập dữ liệu', `/manage/error-import`)]),
-          getItem('Thống kê', `/manage/statistical`),
+          getItem('Quản lý sinh viên', `/manage/students`),
+          getItem('Quản lý tình trạng sinh viên', `/manage/status`),
+          getItem('Quản lý điểm', null, null, [
+            getItem('Theo kỳ', `/manage/points-term`),
+            getItem('Theo năm', `/manage/points-year`),
+          ]),
         ];
       default:
         return [];

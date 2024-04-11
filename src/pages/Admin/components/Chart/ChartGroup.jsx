@@ -5,7 +5,7 @@ export function ChartGroup({ data }) {
   const config = {
     data,
     isGroup: true,
-    xField: 'termId',
+    xField: 'time',
     yField: 'quantity',
     seriesField: 'name',
     label: {

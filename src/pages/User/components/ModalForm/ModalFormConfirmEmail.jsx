@@ -11,7 +11,7 @@ export function ModalFormConfirmEmail({ open, onOpenChange }) {
     mutationKey: ['confirmEmail'],
     mutationFn: async (values) =>
       await visitor.sendRequestChangePassword({
-        link: 'http://localhost:3000/changepassword',
+        link: 'https://fita.io.vn/changepassword',
         user: values,
       }),
     onSuccess: (res) => {

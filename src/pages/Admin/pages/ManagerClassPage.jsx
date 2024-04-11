@@ -1,14 +1,24 @@
 import { adminClassApi } from '@/API/admin/adminClassApi';
+import { adminDisplayApi } from '@/API/admin/adminDisplayApi';
 import { ButtonCustom } from '@/components/Button';
 import { messageErrorToSever } from '@/components/Message';
 import { notificationSuccess } from '@/components/Notification';
-import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+  SearchOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Popconfirm, Select, Space, Table, Tooltip, Typography } from 'antd';
+import { Button, Popconfirm, Select, Space, Table, Tooltip, Typography, Upload, message } from 'antd';
 import { useState } from 'react';
-import { ModalFormClass } from '../components/Modal';
+import { ModalFormClass, ModalShowError } from '../components/Modal';
 
-function ManagerClassPage(props) {
+function ManagerClassPage() {
+  const [openModalError, setOpenModalError] = useState(false);
+  const [dataError, setDataError] = useState([]);
   const queryClient = useQueryClient();
   const { Title } = Typography;
   const [openModalForm, setOpenModalForm] = useState(false);
@@ -16,6 +26,26 @@ function ManagerClassPage(props) {
   const [valueSearchClassId, setValueSearchClassId] = useState(null);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  const props = {
+    name: 'file',
+    multiple: false,
+    showUploadList: false,
+    customRequest: (file) => importClassFile.mutate(file),
+    beforeUpload: (file) => {
+      const checkSize = file.size / 1024 / 1024 < 5;
+      const isXLXS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      if (!isXLXS) {
+        message.error(`${file.name} không phải là một file excel`, 3);
+        return false;
+      }
+      if (!checkSize) {
+        message.error(`File tải lên không được quá 5MB`, 3);
+        return false;
+      }
+      return true;
+    },
+  };
 
   const { data, isFetching } = useQuery({
     staleTime: 60 * 5000,
@@ -41,7 +71,15 @@ function ManagerClassPage(props) {
       }
     },
   });
-
+  const getDataError = useMutation({
+    mutationKey: ['getDataErrorImport'],
+    mutationFn: () => adminDisplayApi.getDisplayErrorImport(5),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        setDataError(res.data);
+      } else messageErrorToSever(res, 'Thất bại');
+    },
+  });
   // Handle Confirm Delete Class
   const handleConfirmDeleteClass = useMutation({
     mutationKey: ['deleteClass'],
@@ -51,14 +89,46 @@ function ManagerClassPage(props) {
         notificationSuccess('Xóa thành công');
         queryClient.invalidateQueries({
           queryKey: ['classList', pageCurrent, valueSearchClassId, pageSize],
-          exact: true,
         });
       } else messageErrorToSever(res, 'Xóa thất bại');
     },
   });
+  const importClassFile = useMutation({
+    mutationKey: ['importClassFile'],
+    mutationFn: (file) => {
+      const formData = new FormData();
+      formData.append('file', file.file);
+      return adminClassApi.importClass(formData);
+    },
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        queryClient.invalidateQueries({
+          queryKey: ['classList', pageCurrent, valueSearchClassId, pageSize],
+          exact: true,
+        });
+        notificationSuccess('Upload file thành công');
+      } else if (res && res.success === false) {
+        getDataError.mutate();
+        setOpenModalError(true);
+        window.open(res.error?.message);
+        messageErrorToSever('Upload file thất bại. Hãy làm theo đúng form excel được tải về máy của bạn');
+      }
+    },
+  });
   const exportClass = useMutation({
     mutationKey: ['exportClass'],
-    mutationFn: () => {},
+    mutationFn: () =>
+      adminClassApi.exportClass({
+        id: valueSearchClassId,
+      }),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        notificationSuccess('Đã xuất file excel thành công hãy kiểm tra trong máy của bạn nhé ');
+        window.open(res.data);
+      } else {
+        messageErrorToSever(res, 'Có lỗi trong quá trình lưu file');
+      }
+    },
   });
   const handleClickBtnExportClass = () => {
     exportClass.mutate();
@@ -188,7 +258,9 @@ function ManagerClassPage(props) {
   return (
     <div>
       <div className='flex justify-between items-center mb-3'>
-        <div className='hidden lg:block w-[10rem]'></div>
+        <Upload {...props}>
+          <ButtonCustom title='Thêm danh sách lớp' icon={<UploadOutlined />} loading={importClassFile.isLoading} />
+        </Upload>
         <Title
           level={3}
           style={{
@@ -220,14 +292,16 @@ function ManagerClassPage(props) {
             showSizeChanger: true,
           }}
         />
-        <div className='absolute bottom-0 left-0'>
-          <ButtonCustom
-            title='Xuất danh sách lớp'
-            handleClick={handleClickBtnExportClass}
-            icon={<DownloadOutlined />}
-            loading={exportClass.isLoading}
-          />
-        </div>
+        {data?.data?.items.length > 0 && (
+          <div className='absolute bottom-0 left-0'>
+            <ButtonCustom
+              title='Xuất danh sách lớp'
+              handleClick={handleClickBtnExportClass}
+              icon={<DownloadOutlined />}
+              loading={exportClass.isLoading}
+            />
+          </div>
+        )}
       </div>
       <ModalFormClass
         dataClass={dataClass}
@@ -239,6 +313,7 @@ function ManagerClassPage(props) {
           }
         }}
       />
+      <ModalShowError dataError={dataError} open={openModalError} setOpen={(open) => setOpenModalError(open)} />
     </div>
   );
 }

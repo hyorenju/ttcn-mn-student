@@ -46,4 +46,22 @@ export const adminClassApi = {
       throw new Error(error);
     }
   },
+  importClass: async (value) => {
+    const url = `/admin/class/import`;
+    try {
+      const res = await instane.post(url, value);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  exportClass: async (value) => {
+    const url = `/admin/class/export`;
+    try {
+      const res = await instane.post(url, value);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };

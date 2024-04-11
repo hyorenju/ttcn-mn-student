@@ -31,7 +31,20 @@ import {
   UsergroupDeleteOutlined,
 } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Drawer, Input, Popconfirm, Popover, Select, Space, Table, Tooltip, Typography, Upload } from 'antd';
+import {
+  Button,
+  Drawer,
+  Input,
+  Popconfirm,
+  Popover,
+  Select,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
+  Upload,
+  message,
+} from 'antd';
 import { useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useDispatch, useSelector } from 'react-redux';
@@ -55,6 +68,8 @@ function ManagerStudentPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [studentIdDebounce] = useDebounce(valueSearchStudent, 750);
   const [courseIdDebounce] = useDebounce(valueSearchCourse, 750);
+  const roleId = JSON.parse(localStorage.getItem('roleId'));
+
   dispatch(setStudentId(studentIdDebounce));
   dispatch(setCourseId(courseIdDebounce));
 
@@ -119,9 +134,6 @@ function ManagerStudentPage() {
           queryKey: ['studentList', pageSize, pageCurrent, studentId, filter],
           exact: true,
         });
-        queryClient.invalidateQueries({
-          queryKey: ['studentListTrash'],
-        });
         setSelectedRowKeys([]);
         notificationSuccess(res.data?.data);
       } else messageErrorToSever(res, 'Thất bại');
@@ -148,6 +160,10 @@ function ManagerStudentPage() {
     },
     onSuccess: (res) => {
       if (res && res.success === true) {
+        queryClient.invalidateQueries({
+          queryKey: ['studentList', pageSize, pageCurrent, studentId, filter],
+          exact: true,
+        });
         notificationSuccess('Upload file thành công');
       } else if (res && res.success === false) {
         getDataError.mutate();
@@ -272,11 +288,11 @@ function ManagerStudentPage() {
       const checkSize = file.size / 1024 / 1024 < 5;
       const isXLXS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
       if (!isXLXS) {
-        messageErrorToSever(`${file.name} không phải là một file excel`);
+        message.error(`${file.name} không phải là một file excel`, 3);
         return false;
       }
       if (!checkSize) {
-        messageErrorToSever(`File tải lên không được quá 5MB`);
+        message.error(`File tải lên không được quá 5MB`, 3);
         return false;
       }
       return true;
@@ -473,75 +489,88 @@ function ManagerStudentPage() {
       align: 'center',
       width: '4%',
       fixed: 'right',
-      render: (e, record, index) => (
-        <Popover
-          trigger={'click'}
-          placement='left'
-          content={
-            <Space size={10} key={index} direction='vertical'>
-              <ButtonCustom
-                title={'Chỉnh sửa'}
-                icon={<EditOutlined />}
-                handleClick={() => handleClickBtnEditStudent(record)}
-              />
-              <ButtonCustom
-                title={'Xem chi tiết'}
-                icon={<SolutionOutlined />}
-                handleClick={() => handleClickBtnShowDetailStudent(record)}
-              />
-              <Popconfirm
-                title='Xóa sinh viên'
-                description={`Bạn có chắc chắn muốn xóa sinh viên ${record.surname} ${record.lastName} ?`}
-                icon={<DeleteOutlined />}
-                okText='Xóa'
-                okType='danger'
-                onConfirm={() => handleConfirmDeleteStudent(record.id)}
-              >
-                <Button
-                  type='primary'
-                  danger
-                  loading={deleteStudents.isLoading}
-                  className='flex justify-center items-center bg-white'
+      render: (e, record, index) =>
+        roleId !== 'MOD' && (
+          <Popover
+            trigger={'click'}
+            placement='left'
+            content={
+              <Space size={10} key={index} direction='vertical'>
+                <ButtonCustom
+                  title={'Chỉnh sửa'}
+                  icon={<EditOutlined />}
+                  handleClick={() => handleClickBtnEditStudent(record)}
+                />
+                <ButtonCustom
+                  title={'Xem chi tiết'}
+                  icon={<SolutionOutlined />}
+                  handleClick={() => handleClickBtnShowDetailStudent(record)}
+                />
+                <Popconfirm
+                  title='Xóa sinh viên'
+                  description={`Bạn có chắc chắn muốn xóa sinh viên ${record.surname} ${record.lastName} ?`}
                   icon={<DeleteOutlined />}
+                  okText='Xóa'
+                  okType='danger'
+                  onConfirm={() => handleConfirmDeleteStudent(record.id)}
                 >
-                  Xóa
-                </Button>
-              </Popconfirm>
-            </Space>
-          }
-        >
-          <Button className='flex items-center justify-center bg-white' icon={<MoreOutlined />} />
-        </Popover>
-      ),
+                  <Button
+                    type='primary'
+                    danger
+                    loading={deleteStudents.isLoading}
+                    className='flex justify-center items-center bg-white'
+                    icon={<DeleteOutlined />}
+                  >
+                    Xóa
+                  </Button>
+                </Popconfirm>
+              </Space>
+            }
+          >
+            <Button className='flex items-center justify-center bg-white' icon={<MoreOutlined />} />
+          </Popover>
+        ),
     },
   ];
   return (
     <div>
-      <div className='flex justify-between items-center mb-3 relative'>
+      <div
+        className={
+          roleId !== 'MOD'
+            ? 'flex justify-between items-center mb-3 relative'
+            : 'flex justify-center items-center mb-3 relative'
+        }
+      >
         <Space>
-          <ButtonCustom
-            title='Xóa hết'
-            icon={<UsergroupDeleteOutlined />}
-            type='primary'
-            disabled={!hasSelected}
-            loading={deleteStudentList.isLoading}
-            handleClick={handleConfirmDeleteStudentList}
-          />
-          <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
+          {roleId !== 'MOD' && (
+            <ButtonCustom
+              title='Xóa hết'
+              icon={<UsergroupDeleteOutlined />}
+              type='primary'
+              disabled={!hasSelected}
+              loading={deleteStudentList.isLoading}
+              handleClick={handleConfirmDeleteStudentList}
+            />
+          )}
+          {roleId === 'SUPERADMIN' && (
+            <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
+          )}
         </Space>
         <Title className='hidden xl:block' level={3} style={{ textTransform: 'uppercase', marginBottom: 0 }}>
           Danh sách sinh viên
         </Title>
-        <Space size={8}>
-          <Upload {...props}>
-            <ButtonCustom
-              title='Thêm danh sách sinh viên'
-              icon={<UploadOutlined />}
-              loading={importStudentList.isLoading}
-            />
-          </Upload>
-          <ButtonCustom title='Thêm sinh viên' icon={<UserAddOutlined />} handleClick={handleClickBtnAddStudent} />
-        </Space>
+        {roleId !== 'MOD' && (
+          <Space size={8}>
+            <Upload {...props}>
+              <ButtonCustom
+                title='Thêm danh sách sinh viên'
+                icon={<UploadOutlined />}
+                loading={importStudentList.isLoading}
+              />
+            </Upload>
+            <ButtonCustom title='Thêm sinh viên' icon={<UserAddOutlined />} handleClick={handleClickBtnAddStudent} />
+          </Space>
+        )}
       </div>
       <div className='relative'>
         <Table
@@ -567,14 +596,16 @@ function ManagerStudentPage() {
             pageSizeOptions: [10, 50, 100, 200],
           }}
         />
-        <div className='absolute bottom-0 left-0'>
-          <ButtonCustom
-            title='Xuất danh sách sinh viên'
-            loading={exportStudentFormExcel.isLoading}
-            handleClick={handleClickBtnExportFileStudentList}
-            icon={<DownloadOutlined />}
-          />
-        </div>
+        {studentList.length > 0 && (
+          <div className='absolute bottom-0 left-0'>
+            <ButtonCustom
+              title='Xuất danh sách sinh viên'
+              loading={exportStudentFormExcel.isLoading}
+              handleClick={handleClickBtnExportFileStudentList}
+              icon={<DownloadOutlined />}
+            />
+          </div>
+        )}
       </div>
       <ModalFormStudentInfo
         dataStudent={dataStudent}
@@ -586,7 +617,7 @@ function ManagerStudentPage() {
           }
         }}
       />
-      <ModalTrashCanStudent open={openModalTrush} close={() => setOpenModalTrush(false)} />
+      {roleId === 'SUPERADMIN' && <ModalTrashCanStudent open={openModalTrush} close={() => setOpenModalTrush(false)} />}
       <ModalShowError dataError={dataError} open={openModalError} setOpen={(open) => setOpenModalError(open)} />
       <Drawer size='large' open={openDrawerInfo} onClose={handleClickBtnCloseDrawerDetailStudent} placement='right'>
         <DescriptionInfoStudent dataStudent={dataStudent} />

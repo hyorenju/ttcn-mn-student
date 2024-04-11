@@ -3,8 +3,7 @@ import Cookies from 'js-cookie';
 import { visitor } from './Visistor/visitor';
 
 const instane = axios.create({
-  // baseURL: 'https://api.fita.io.vn',
-  baseURL: 'http://localhost:8080',
+  baseURL: 'https://api.fita.io.vn',
   headers: {
     'ngrok-skip-browser-warning': '1',
   },

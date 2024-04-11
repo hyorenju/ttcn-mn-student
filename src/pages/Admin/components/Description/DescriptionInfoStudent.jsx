@@ -32,6 +32,9 @@ export function DescriptionInfoStudent({ dataStudent }) {
           <Descriptions.Item span={1} label='Số điện thoại'>
             {dataStudent.phoneNumber}
           </Descriptions.Item>
+          <Descriptions.Item span={1} label='Số điện thoại dự phòng'>
+            {dataStudent.phoneNumber2}
+          </Descriptions.Item>
           <Descriptions.Item span={1} label='Email'>
             {dataStudent.email}
           </Descriptions.Item>

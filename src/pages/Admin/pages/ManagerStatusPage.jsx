@@ -1,9 +1,10 @@
+import { adminDisplayApi } from '@/API/admin/adminDisplayApi';
 import { adminSemesterApi } from '@/API/admin/adminSemesterApi';
 import { adminStatusApi } from '@/API/admin/adminStatusApi';
 import { adminStudentStatusApi } from '@/API/admin/adminStudentStatusApi';
 import { ButtonCustom } from '@/components/Button';
 import { messageErrorToSever } from '@/components/Message';
-import { notificationSuccess } from '@/components/Notification';
+import { notificationError, notificationSuccess } from '@/components/Notification';
 import {
   DeleteOutlined,
   DownloadOutlined,
@@ -15,14 +16,29 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Drawer, Input, Popconfirm, Popover, Select, Space, Table, Tooltip, Typography, Upload } from 'antd';
+import {
+  Button,
+  Drawer,
+  Input,
+  Popconfirm,
+  Popover,
+  Select,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
+  Upload,
+  message,
+} from 'antd';
 import { useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useDebounce } from 'use-debounce';
-import { ModalFormStudentStatus } from '../components/Modal';
+import { ModalFormStudentStatus, ModalShowError } from '../components/Modal';
 import { TableListStatus } from '../components/Table';
 
 function ManagerStatusPage() {
+  const [dataError, setDataError] = useState({});
+  const [openModalError, setOpenModalError] = useState(false);
   const queryClient = useQueryClient();
   const { Title } = Typography;
   const [valueSearchTermId, setValueSearchTermId] = useState(null);
@@ -34,6 +50,7 @@ function ManagerStatusPage() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [dataStudent, setDataStudent] = useState({});
   const [studentId] = useDebounce(valueSearchStudentId, 600);
+  const roleId = JSON.parse(localStorage.getItem('roleId'));
 
   const { data, isFetching } = useQuery({
     staleTime: 60 * 5000,
@@ -78,11 +95,20 @@ function ManagerStatusPage() {
     onSuccess: (res) => {
       if (res && res.success === true) {
         queryClient.invalidateQueries({
-          queryKey: ['studentStatusList', pageCurrent, pageSize, studentId],
+          queryKey: ['studentStatusList', pageCurrent, pageSize, studentId, valueSearchTermId, valueSearchStatusId],
           exact: true,
         });
         notificationSuccess('Xóa tình trạng sinh viên thành công');
       } else messageErrorToSever(res, 'Xóa tình trạng sinh viên thất bại');
+    },
+  });
+  const getDataError = useMutation({
+    mutationKey: ['getDataErrorImport'],
+    mutationFn: () => adminDisplayApi.getDisplayErrorImport(4),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        setDataError(res.data);
+      } else messageErrorToSever(res, 'Thất bại');
     },
   });
   const importStudentStatusList = useMutation({
@@ -90,13 +116,43 @@ function ManagerStatusPage() {
     mutationFn: (file) => {
       const formData = new FormData();
       formData.append('file', file.file);
+      return adminStudentStatusApi.importStudentStatus(formData);
     },
-    onSuccess: (res) => {},
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        notificationSuccess('Upload file thành công');
+        queryClient.invalidateQueries({
+          queryKey: ['studentStatusList', pageCurrent, pageSize, studentId, valueSearchTermId, valueSearchStatusId],
+          exact: true,
+        });
+      } else if (res && res.success === false) {
+        getDataError.mutate();
+        notificationError(`Upload file thất bại. Hãy làm theo đúng form excel được tải về máy của bạn`);
+        setOpenModalError(true);
+        window.open(res.error?.message);
+      } else messageErrorToSever(res);
+    },
   });
   const exportStudentFormExcel = useMutation({
     mutationKey: ['exportStudentStatusList'],
-    mutationFn: () => {},
-    onSuccess: () => {},
+    mutationFn: () =>
+      adminStudentStatusApi.exportStudentStatus({
+        studentId: studentId,
+        page: pageCurrent,
+        size: pageSize,
+        filter: {
+          termId: valueSearchTermId,
+          statusId: valueSearchStatusId,
+        },
+      }),
+    onSuccess: (res) => {
+      if (res && res.success === true) {
+        notificationSuccess('Đã xuất file excel thành công hãy kiểm tra trong máy của bạn nhé ');
+        window.open(res.data);
+      } else {
+        messageErrorToSever(res, 'Có lỗi trong quá trình lưu file');
+      }
+    },
   });
 
   const handleClickBtnExportFileStudentStatusList = () => {
@@ -145,11 +201,11 @@ function ManagerStatusPage() {
       const checkSize = file.size / 1024 / 1024 < 5;
       const isXLXS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
       if (!isXLXS) {
-        messageErrorToSever(`${file.name} không phải là một file excel`);
+        message.error(`${file.name} không phải là một file excel`, 3);
         return false;
       }
       if (!checkSize) {
-        messageErrorToSever(`File tải lên không được quá 5MB`);
+        message.error(`File tải lên không được quá 5MB`, 3);
         return false;
       }
       return true;
@@ -159,7 +215,7 @@ function ManagerStatusPage() {
   const columns = [
     {
       title: 'Mã học kỳ',
-      dataIndex: ['termId'],
+      dataIndex: ['term', 'id'],
       align: 'center',
       key: 'termId',
       filterDropdown: ({ close }) => (
@@ -278,65 +334,76 @@ function ManagerStatusPage() {
     },
     {
       align: 'center',
-      width: '8%',
-      render: (index, record) => (
-        <Popover
-          trigger={'click'}
-          placement='left'
-          content={
-            <Space size={10} key={index} direction='vertical'>
-              <ButtonCustom
-                title={'Chỉnh sửa'}
-                icon={<EditOutlined />}
-                handleClick={() => handleClickBtnEditStatusStudent(record)}
-              />
-              <Popconfirm
-                title='Xóa sinh viên'
-                description={`Bạn có chắc chắn muốn xóa sinh viên ${record.student.id} ?`}
-                icon={<DeleteOutlined />}
-                okText='Xóa'
-                okType='danger'
-                onConfirm={() => handleConfirmDeleteStatusStudent(record.id)}
-              >
-                <Button
-                  danger
-                  loading={deleteStudentStatus.isLoading}
-                  className='flex justify-center items-center bg-white'
+      width: '4%',
+      render: (index, record) =>
+        roleId !== 'MOD' && (
+          <Popover
+            trigger={'click'}
+            placement='left'
+            content={
+              <Space size={10} key={index} direction='vertical'>
+                <ButtonCustom
+                  title={'Chỉnh sửa'}
+                  icon={<EditOutlined />}
+                  handleClick={() => handleClickBtnEditStatusStudent(record)}
+                />
+                <Popconfirm
+                  title='Xóa sinh viên'
+                  description={`Bạn có chắc chắn muốn xóa sinh viên ${record.student.id} ?`}
                   icon={<DeleteOutlined />}
+                  okText='Xóa'
+                  okType='danger'
+                  onConfirm={() => handleConfirmDeleteStatusStudent(record.id)}
                 >
-                  Xóa
-                </Button>
-              </Popconfirm>
-            </Space>
-          }
-        >
-          <Button className='flex items-center justify-center' icon={<MoreOutlined />} />
-        </Popover>
-      ),
+                  <Button
+                    danger
+                    loading={deleteStudentStatus.isLoading}
+                    className='flex justify-center items-center bg-white'
+                    icon={<DeleteOutlined />}
+                  >
+                    Xóa
+                  </Button>
+                </Popconfirm>
+              </Space>
+            }
+          >
+            <Button className='flex items-center justify-center' icon={<MoreOutlined />} />
+          </Popover>
+        ),
     },
   ];
 
   return (
     <div>
-      <div className='flex justify-between items-center mb-3 relative'>
-        <ButtonCustom title='Danh sách tình trạng' handleClick={handleClickShowStatusList} icon={<TableOutlined />} />
+      <div
+        className={
+          roleId !== 'MOD'
+            ? 'flex justify-between items-center mb-3 relative'
+            : 'flex justify-center items-center mb-3 relative'
+        }
+      >
+        {roleId !== 'MOD' && (
+          <ButtonCustom title='Danh sách tình trạng' handleClick={handleClickShowStatusList} icon={<TableOutlined />} />
+        )}
         <Title className='hidden xl:block' level={3} style={{ textTransform: 'uppercase', marginBottom: 0 }}>
           Quản lý tình trạng sinh viên
         </Title>
-        <Space>
-          <Upload {...props}>
+        {roleId !== 'MOD' && (
+          <Space>
+            <Upload {...props}>
+              <ButtonCustom
+                title='Thêm danh sách tình trạng'
+                loading={importStudentStatusList.isLoading}
+                icon={<UploadOutlined />}
+              />
+            </Upload>
             <ButtonCustom
-              title='Thêm danh sách tình trạng'
-              loading={importStudentStatusList.isLoading}
-              icon={<UploadOutlined />}
+              title='Thêm tình trạng sinh viên'
+              handleClick={handleClickAddStatus}
+              icon={<UserAddOutlined />}
             />
-          </Upload>
-          <ButtonCustom
-            title='Thêm tình trạng sinh viên'
-            handleClick={handleClickAddStatus}
-            icon={<UserAddOutlined />}
-          />
-        </Space>
+          </Space>
+        )}
       </div>
       <div className='relative'>
         <Table
@@ -357,14 +424,16 @@ function ManagerStatusPage() {
             showSizeChanger: true,
           }}
         />
-        <div className='absolute bottom-0 left-0'>
-          <ButtonCustom
-            title='Xuất danh sách tình trạng sinh viên'
-            loading={exportStudentFormExcel.isLoading}
-            handleClick={handleClickBtnExportFileStudentStatusList}
-            icon={<DownloadOutlined />}
-          />
-        </div>
+        {data?.data?.items.length > 0 && (
+          <div className='absolute bottom-0 left-0'>
+            <ButtonCustom
+              title='Xuất danh sách tình trạng sinh viên'
+              loading={exportStudentFormExcel.isLoading}
+              handleClick={handleClickBtnExportFileStudentStatusList}
+              icon={<DownloadOutlined />}
+            />
+          </div>
+        )}
       </div>
       <ModalFormStudentStatus
         open={openModal}
@@ -376,6 +445,7 @@ function ManagerStatusPage() {
         }}
         dataStudent={dataStudent}
       />
+      <ModalShowError dataError={dataError} open={openModalError} setOpen={(open) => setOpenModalError(open)} />
       <Drawer
         extra={<h1 className='text-black font-medium text-xl'>Danh sách tình trạng</h1>}
         placement='left'

@@ -28,10 +28,10 @@ export const studentApi = {
       throw new Error(error);
     }
   },
-  updateAvatar: async (values) => {
+  updateAvatar: async (data) => {
     const url = `/student/avatar`;
     try {
-      const res = await instane.post(url, values);
+      const res = await instane.post(url, data);
       return res.data;
     } catch (error) {
       throw new Error(error);
@@ -48,6 +48,15 @@ export const studentApi = {
   },
   updateProfile: async (values) => {
     const url = `/student/update`;
+    try {
+      const res = await instane.post(url, values);
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  statusList: async (values) => {
+    const url = `/student/status`;
     try {
       const res = await instane.post(url, values);
       return res.data;

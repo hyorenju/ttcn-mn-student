@@ -193,7 +193,7 @@ function ManagerAuthorizationPage(props) {
       <div className='flex justify-between mb-3'>
         <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
         <Title level={3} className='uppercase absolute left-2/4'>
-          Danh sách admin
+          Danh sách quản trị viên
         </Title>
         <Space>
           <ButtonCustom

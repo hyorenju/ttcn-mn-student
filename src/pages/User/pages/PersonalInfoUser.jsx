@@ -2,7 +2,14 @@ import { studentApi } from '@/API/Student';
 import { ButtonCustom } from '@/components/Button';
 import { messageErrorToSever } from '@/components/Message';
 import { notificationError, notificationSuccess } from '@/components/Notification';
-import { AreaChartOutlined, FileImageOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  AreaChartOutlined,
+  CarryOutOutlined,
+  FileImageOutlined,
+  LockOutlined,
+  MailOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Avatar, Drawer, Space, Upload } from 'antd';
 import { useState } from 'react';
@@ -10,12 +17,14 @@ import { ChartColumnBasic, ChartLiquid } from '../../Admin/components/Chart';
 import { FormInfoUser } from '../components/Form/FormInfoUser';
 import { DefaultLayoutPage } from '../components/Layout/DefaultLayoutPage';
 import { ModalChangePassword, ModalFormChangeEmail } from '../components/ModalForm';
+import { ModalStudentStatus } from '../components/Modal';
 
 function PersonalInfoUser() {
   const dataStudentLocal = JSON.parse(localStorage.getItem('info_student'));
   const [openDrawerPoint, setOpenDrawerPoint] = useState(false);
   const [openModalFormChangePassword, setOpenModalFormChangePassword] = useState(false);
   const [openModalFormChangeEmail, setOpenModalFormChangeEmail] = useState(false);
+  const [openModalStudentStatus, setOpenModalStudentStatus] = useState(false);
 
   const { data } = useQuery({
     staleTime: 10 * 60 * 1000,
@@ -78,6 +87,9 @@ function PersonalInfoUser() {
   const handleClickUpdateEmail = () => {
     setOpenModalFormChangeEmail(true);
   };
+  const handleClickStatusList = () => {
+    setOpenModalStudentStatus(true);
+  };
 
   return (
     <>
@@ -123,6 +135,11 @@ function PersonalInfoUser() {
                       title={'Điểm học tập'}
                       icon={<AreaChartOutlined />}
                     />
+                    <ButtonCustom
+                      handleClick={handleClickStatusList}
+                      title={'Tình trạng'}
+                      icon={<CarryOutOutlined />}
+                    />
                   </div>
                 </Space>
               </div>
@@ -134,6 +151,7 @@ function PersonalInfoUser() {
         </section>
         <ModalChangePassword open={openModalFormChangePassword} onOpenChange={handleOpenChangeFormPassword} />
         <ModalFormChangeEmail open={openModalFormChangeEmail} onOpenChange={handleOpenChangeFormEmail} />
+        <ModalStudentStatus open={openModalStudentStatus} onOpenChange={(open) => setOpenModalStudentStatus(open)} />
       </DefaultLayoutPage>
       <Drawer
         extra={<h1 className='text-black font-medium text-xl'>Điểm học tập</h1>}

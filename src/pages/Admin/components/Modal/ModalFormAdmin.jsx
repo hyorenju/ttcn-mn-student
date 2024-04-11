@@ -105,7 +105,7 @@ export function ModalFormAdmin({ openForm, onChangeClickOpen, dataAdmin }) {
           <ProFormSelect
             width='md'
             rules={[{ required: true, message: 'Không được để trống' }]}
-            name='roleId'
+            name={['role', 'id']}
             label='Vai trò'
             options={[
               {

@@ -51,6 +51,7 @@ function ManagerYearPointPage() {
   const [openModalError, setOpenModalError] = useState(false);
   const [openModalFormPoint, setOpenModalFormPoint] = useState(false);
   const [studentIdDebounce] = useDebounce(valueSearchStudentId, 750);
+  const roleId = JSON.parse(localStorage.getItem('roleId'));
   dispatch(setStudentId(studentIdDebounce));
 
   // Handle get data points
@@ -135,7 +136,7 @@ function ManagerYearPointPage() {
   const exportFileData = useMutation({
     mutationKey: ['exportFileDataPoint'],
     mutationFn: () =>
-      adminPointApi.exportPointStudent({
+      adminPointApi.exportPointOfYear({
         size: pageSize,
         studentId: studentId,
         termId: termId,
@@ -152,7 +153,7 @@ function ManagerYearPointPage() {
   });
   const getDataError = useMutation({
     mutationKey: ['getDataError'],
-    mutationFn: () => adminDisplayApi.getDisplayErrorImport(2),
+    mutationFn: () => adminDisplayApi.getDisplayErrorImport(3),
     onSuccess: (res) => {
       if (res && res.success === true) {
         setDataError(res.data);
@@ -311,7 +312,7 @@ function ManagerYearPointPage() {
     },
     {
       title: 'Năm học',
-      dataIndex: 'year',
+      dataIndex: ['year', 'id'],
       align: 'center',
     },
     {
@@ -377,61 +378,74 @@ function ManagerYearPointPage() {
       fixed: 'right',
       align: 'center',
       width: '4%',
-      render: (e, record, idx) => (
-        <Popover
-          key={idx}
-          trigger={'click'}
-          placement='left'
-          content={
-            <Space direction='vertical'>
-              <ButtonCustom title='Chỉnh sửa' icon={<EditOutlined />} handleClick={() => handleEditPointTerm(record)} />
-              <Popconfirm
-                title={`Bạn có chắc chắn muốn xóa điểm của sinh viên ${record.student.id} trong học kỳ ${record.year}`}
-                icon={<DeleteOutlined />}
-                okText='Xóa'
-                okType='danger'
-                onConfirm={() => handleConfirmDeletePoint(record.id)}
-              >
-                <Button
-                  danger
-                  loading={deletePointOfYear.isLoading}
-                  className='flex justify-center items-center text-md shadow-md'
+      render: (e, record, idx) =>
+        roleId !== 'MOD' && (
+          <Popover
+            key={idx}
+            trigger={'click'}
+            placement='left'
+            content={
+              <Space direction='vertical'>
+                <ButtonCustom
+                  title='Chỉnh sửa'
+                  icon={<EditOutlined />}
+                  handleClick={() => handleEditPointTerm(record)}
+                />
+                <Popconfirm
+                  title={`Bạn có chắc chắn muốn xóa điểm của sinh viên ${record.student.id} trong học kỳ ${record.year}`}
                   icon={<DeleteOutlined />}
+                  okText='Xóa'
+                  okType='danger'
+                  onConfirm={() => handleConfirmDeletePoint(record.id)}
                 >
-                  Xóa
-                </Button>
-              </Popconfirm>
-            </Space>
-          }
-        >
-          <Button className='flex items-center justify-center  bg-white' icon={<MoreOutlined />} />
-        </Popover>
-      ),
+                  <Button
+                    danger
+                    loading={deletePointOfYear.isLoading}
+                    className='flex justify-center items-center text-md shadow-md'
+                    icon={<DeleteOutlined />}
+                  >
+                    Xóa
+                  </Button>
+                </Popconfirm>
+              </Space>
+            }
+          >
+            <Button className='flex items-center justify-center  bg-white' icon={<MoreOutlined />} />
+          </Popover>
+        ),
     },
   ];
   return (
     <div>
-      <div className='flex justify-between items-center mb-3'>
-        <Space>
-          <ButtonCustom
-            title='Xóa hết'
-            icon={<UsergroupDeleteOutlined />}
-            type='primary'
-            disabled={!hasSelected}
-            handleClick={handleClickDeletePointOfYearList}
-          />
-          <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
-          <Popover placement='bottom' content={<ContentPopoverPoint />} trigger='click'>
-            <Button
-              icon={<FilterOutlined />}
-              className={`${
-                filter.point || filter.accPoint || filter.traningPoint ? 'text-blue-500' : undefined
-              } flex justify-center items-center text-md bg-white`}
-            >
-              Lọc theo khoảng điểm
-            </Button>
-          </Popover>
-        </Space>
+      <div
+        className={
+          roleId !== 'MOD' ? 'flex justify-between items-center mb-3' : 'flex justify-center items-center mb-3'
+        }
+      >
+        {roleId !== 'MOD' && (
+          <Space>
+            <ButtonCustom
+              title='Xóa hết'
+              icon={<UsergroupDeleteOutlined />}
+              type='primary'
+              disabled={!hasSelected}
+              handleClick={handleClickDeletePointOfYearList}
+            />
+            {roleId === 'SUPERADMIN' && (
+              <ButtonCustom title='Thùng rác' icon={<DeleteFilled />} handleClick={handleClickBtnTrush} />
+            )}
+            <Popover placement='bottom' content={<ContentPopoverPoint />} trigger='click'>
+              <Button
+                icon={<FilterOutlined />}
+                className={`${
+                  filter.point || filter.accPoint || filter.traningPoint ? 'text-blue-500' : undefined
+                } flex justify-center items-center text-md bg-white`}
+              >
+                Lọc theo khoảng điểm
+              </Button>
+            </Popover>
+          </Space>
+        )}
         <Title
           style={{
             textAlign: 'center',
@@ -443,12 +457,18 @@ function ManagerYearPointPage() {
         >
           Danh sách điểm theo năm
         </Title>
-        <Space>
-          <Upload {...props}>
-            <ButtonCustom title={'Thêm danh sách điểm'} icon={<UploadOutlined />} loading={importFileData.isLoading} />
-          </Upload>
-          <ButtonCustom icon={<PlusCircleOutlined />} handleClick={handleClickAddPointTerm} title={'Thêm điểm'} />
-        </Space>
+        {roleId !== 'MOD' && (
+          <Space>
+            <Upload {...props}>
+              <ButtonCustom
+                title={'Thêm danh sách điểm'}
+                icon={<UploadOutlined />}
+                loading={importFileData.isLoading}
+              />
+            </Upload>
+            <ButtonCustom icon={<PlusCircleOutlined />} handleClick={handleClickAddPointTerm} title={'Thêm điểm'} />
+          </Space>
+        )}
       </div>
       <div className='relative'>
         <Table
@@ -474,7 +494,7 @@ function ManagerYearPointPage() {
             showSizeChanger: true,
           }}
         />
-        {pointOfYearList && (
+        {pointOfYearList.length > 0 && (
           <div className='absolute bottom-3 left-0'>
             <ButtonCustom
               title='Xuất danh sách điểm'
@@ -496,7 +516,7 @@ function ManagerYearPointPage() {
         }}
       />
       <ModalShowError open={openModalError} setOpen={(open) => setOpenModalError(open)} dataError={dataError} />
-      <ModalTrashCanPoint open={openModalTrush} close={() => setOpenModalTrush(false)} />
+      {roleId === 'SUPERADMIN' && <ModalTrashCanPoint open={openModalTrush} close={() => setOpenModalTrush(false)} />}
     </div>
   );
 }

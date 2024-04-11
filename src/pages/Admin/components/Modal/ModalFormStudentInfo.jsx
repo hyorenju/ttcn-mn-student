@@ -149,19 +149,17 @@ export function ModalFormStudentInfo({ openForm, onChangeClickOpen, dataStudent 
             placeholder='Nhập số điện thoại'
           />
           <ProFormText
+            width='md'
+            name='phoneNumber2'
+            label='Số điện thoại dự phòng'
+            placeholder='Nhập số điện thoại dự phòng'
+          />
+          <ProFormText
             rules={[{ required: true, message: 'Không được để trống' }]}
             width='md'
             name='dob'
             label='Ngày sinh'
             placeholder='Nhập ngày sinh, dd/MM/YYYY'
-          />
-          <ProFormRadio.Group
-            width='md'
-            rules={[{ required: true, message: 'Không được để trống' }]}
-            name='gender'
-            label='Giới tính'
-            options={optionGender}
-            placeholder='Chọn giới tính'
           />
         </ProForm.Group>
         <ProForm.Group>
@@ -179,6 +177,16 @@ export function ModalFormStudentInfo({ openForm, onChangeClickOpen, dataStudent 
             label='Khóa'
             placeholder='Nhập khóa học'
           />
+          <ProFormRadio.Group
+            width='md'
+            rules={[{ required: true, message: 'Không được để trống' }]}
+            name='gender'
+            label='Giới tính'
+            options={optionGender}
+            placeholder='Chọn giới tính'
+          />
+        </ProForm.Group>
+        <ProForm.Group>
           <ProFormSelect
             rules={[{ required: true, message: 'Không được để trống' }]}
             width='md'
@@ -191,8 +199,6 @@ export function ModalFormStudentInfo({ openForm, onChangeClickOpen, dataStudent 
             placeholder='Chọn mã ngành'
             options={optionMajor}
           />
-        </ProForm.Group>
-        <ProForm.Group>
           <ProFormSelect
             rules={[{ required: true, message: 'Không được để trống' }]}
             width='md'
@@ -212,14 +218,14 @@ export function ModalFormStudentInfo({ openForm, onChangeClickOpen, dataStudent 
             label='Quê quán'
             placeholder='Nhập quê quán'
           />
+        </ProForm.Group>
+        <ProForm.Group>
           <ProFormText
             width='md'
             name='residence'
             label='Nơi ở hiện tại'
             placeholder='Nhập nơi ở hiện tại của sinh viên'
           />
-        </ProForm.Group>
-        <ProForm.Group>
           <ProFormText width='md' name='fatherName' label='Họ và tên bố' placeholder='Nhập họ tên bố ' />
           <ProFormText
             width='md'
@@ -227,8 +233,8 @@ export function ModalFormStudentInfo({ openForm, onChangeClickOpen, dataStudent 
             label='Số điện thoại bố'
             placeholder='Nhập số điện thoại bố'
           />
-          <ProFormText width='md' name='motherName' label='Họ và tên mẹ' placeholder='Nhập họ tên mẹ' />
           <ProForm.Group>
+            <ProFormText width='md' name='motherName' label='Họ và tên mẹ' placeholder='Nhập họ tên mẹ' />
             <ProFormText
               width='md'
               name='motherPhoneNumber'
