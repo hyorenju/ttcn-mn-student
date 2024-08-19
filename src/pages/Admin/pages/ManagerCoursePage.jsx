@@ -155,7 +155,7 @@ function ManagerCoursePage(props) {
       </div>
       <Table
         scroll={{
-          y: 630,
+          y: 5000,
         }}
         loading={isFetching}
         bordered={true}

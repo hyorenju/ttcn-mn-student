@@ -159,7 +159,7 @@ function ManagerSemestersPage(props) {
       </div>
       <Table
         scroll={{
-          y: 630,
+          y: 5000,
         }}
         dataSource={data?.data?.items}
         bordered={true}

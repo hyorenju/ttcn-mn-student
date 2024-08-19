@@ -232,6 +232,7 @@ function ManagerClassPage() {
     {
       title: 'Tùy chọn',
       align: 'center',
+      width: '20%',
       render: (e, record, index) => (
         <Button.Group key={index}>
           <ButtonCustom icon={<EditOutlined />} title={'Chỉnh sửa'} handleClick={() => handleClickEditClass(record)} />
@@ -276,7 +277,7 @@ function ManagerClassPage() {
       <div className='relative'>
         <Table
           scroll={{
-            y: 630,
+            y: 5000,
           }}
           rowKey='id'
           bordered={true}
@@ -293,7 +294,7 @@ function ManagerClassPage() {
           }}
         />
         {data?.data?.items.length > 0 && (
-          <div className='absolute bottom-0 left-0'>
+          <div className='absolute bottom-[20px]'>
             <ButtonCustom
               title='Xuất danh sách lớp'
               handleClick={handleClickBtnExportClass}

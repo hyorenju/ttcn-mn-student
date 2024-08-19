@@ -78,9 +78,9 @@ export function FacultyStatistical(props) {
   };
   return (
     <div>
-      <div className='flex gap-4'>
+      <div className='flex gap-4 mb-3'>
         <Space>
-          Lọc theo
+          Lọc theo:
           <Select
             className='w-[350px]'
             size='large'
@@ -170,14 +170,15 @@ export function FacultyStatistical(props) {
             </Space>
           </>
         )}
-        <ButtonCustom
-          title={'Tìm kiếm'}
-          size={'large'}
-          type='primary'
-          handleClick={() => handleSubmit(optionChart)}
-          loading={handleGetDataColumn1.isLoading || handleGetDataColumn2.isLoading || handleGetDataCircle.isLoading}
-        />
       </div>
+
+      <ButtonCustom
+        title={'Tìm kiếm'}
+        size={'large'}
+        type='primary'
+        handleClick={() => handleSubmit(optionChart)}
+        loading={handleGetDataColumn1.isLoading || handleGetDataColumn2.isLoading || handleGetDataCircle.isLoading}
+      />
       {dataPie &&
         optionChart === 'circle' &&
         dataPie.map((item) => (

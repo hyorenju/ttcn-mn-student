@@ -24,7 +24,7 @@ export function ChartGroup({ data }) {
     },
   };
   return (
-    <div>
+    <div className='h-[50vh]'>
       <Column {...config} />
     </div>
   );

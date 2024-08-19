@@ -37,8 +37,8 @@ export function DefaultLayoutAdmin(props) {
           getItem('Quản lý sinh viên', `/manage/students`),
           getItem('Quản lý tình trạng sinh viên', `/manage/status`),
           getItem('Quản lý điểm', null, null, [
-            getItem('Theo kỳ', `/manage/points-term`),
-            getItem('Theo năm', `/manage/points-year`),
+            getItem('Theo học kỳ', `/manage/points-term`),
+            getItem('Theo năm học', `/manage/points-year`),
           ]),
         ];
       case 'SUPERADMIN':
@@ -48,13 +48,13 @@ export function DefaultLayoutAdmin(props) {
           getItem('Quản lý ngành', `/manage/majors`),
           getItem('Quản lý khóa', `/manage/courses`),
           getItem('Quản lý điểm', null, null, [
-            getItem('Theo kỳ', `/manage/points-term`),
-            getItem('Theo năm', `/manage/points-year`),
+            getItem('Theo học kỳ', `/manage/points-term`),
+            getItem('Theo năm học', `/manage/points-year`),
           ]),
           getItem('Quản lý học kỳ', `/manage/semesters`),
           getItem('Quản lý tình trạng sinh viên', `/manage/status`),
           getItem('Quản lý quản trị viên', `/manage/authorization`),
-          getItem('Quản lý hiển thị', null, null, [getItem('Lỗi nhập dữ liệu', `/manage/error-import`)]),
+          // getItem('Quản lý hiển thị', null, null, [getItem('Lỗi nhập dữ liệu', `/manage/error-import`)]),
           getItem('Thống kê', `/manage/statistical`),
         ];
       case 'MOD':
@@ -62,8 +62,8 @@ export function DefaultLayoutAdmin(props) {
           getItem('Quản lý sinh viên', `/manage/students`),
           getItem('Quản lý tình trạng sinh viên', `/manage/status`),
           getItem('Quản lý điểm', null, null, [
-            getItem('Theo kỳ', `/manage/points-term`),
-            getItem('Theo năm', `/manage/points-year`),
+            getItem('Theo học kỳ', `/manage/points-term`),
+            getItem('Theo năm học', `/manage/points-year`),
           ]),
         ];
       default:
@@ -73,7 +73,7 @@ export function DefaultLayoutAdmin(props) {
 
   return (
     <div className='p-1 bg-white'>
-      <Layout className='min-h-[99vh]'>
+      <Layout className='h-[98.5vh]'>
         <Sider style={{ borderRadius: '6px' }} width={250} breakpoint='lg' collapsedWidth='0'>
           <div className='py-3 px-6 flex justify-center items-center border-b-2 border-stone-50'>
             <Title style={{ color: '#fff', marginBottom: 0, width: 150 }} level={4}>
@@ -124,7 +124,7 @@ export function DefaultLayoutAdmin(props) {
               </Tooltip>
             </Space>
           </Header>
-          <Content className='mt-2 p-6 pb-0 bg-slate-200 rounded-md max-h-[91vh] overflow-y-auto'>
+          <Content className='mt-2 p-6 pb-0 bg-slate-200 rounded-md max-h-[89vh] overflow-y-auto'>
             <Outlet />
           </Content>
         </Layout>

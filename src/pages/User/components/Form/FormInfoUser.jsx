@@ -63,7 +63,6 @@ export function FormInfoUser() {
               width='md'
               name='surname'
               label=<p className='text-base'>Họ Đệm</p>
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -75,7 +74,6 @@ export function FormInfoUser() {
               width='md'
               name='lastName'
               label=<p className='text-base'>Tên</p>
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -88,7 +86,6 @@ export function FormInfoUser() {
               name='id'
               label=<p className='text-base'>Mã sinh viên</p>
               placeholder='Mã sinh viên'
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -101,7 +98,6 @@ export function FormInfoUser() {
               name={['aclass', 'id']}
               label=<p className='text-base'>Lớp</p>
               placeholder='Lớp'
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -114,7 +110,6 @@ export function FormInfoUser() {
               name={['major', 'id']}
               label=<p className='text-base'>Chuyên ngành</p>
               placeholder='Chuyên ngành'
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -127,7 +122,6 @@ export function FormInfoUser() {
               name='email'
               label=<p className='text-base'>Email</p>
               placeholder='example@gamil.com'
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -140,7 +134,6 @@ export function FormInfoUser() {
               name='phoneNumber'
               label=<p className='text-base'>Số điện thoại</p>
               placeholder='+84'
-              rules={[{ required: true, message: 'Không thể bỏ trống' }]}
             />
           </Col>
           <Col>
@@ -161,12 +154,6 @@ export function FormInfoUser() {
               }}
               disabled
               width='md'
-              rules={[
-                {
-                  required: true,
-                  message: 'Không thể để trống',
-                },
-              ]}
               name='homeTown'
               label=<p className='text-base'>Địa chỉ quê quán</p>
               placeholder='Số nhà - Ngõ (Ngách) - Xã - Phường'
@@ -179,12 +166,6 @@ export function FormInfoUser() {
               }}
               width='md'
               name='residence'
-              rules={[
-                {
-                  required: true,
-                  message: 'Không thể để trống',
-                },
-              ]}
               label=<p className='text-base'>Địa chỉ nơi ở hiện tại</p>
               placeholder='Số nhà - Ngõ (Ngách) - Xã - Phường'
             />
@@ -207,7 +188,7 @@ export function FormInfoUser() {
               }}
               width='md'
               name='fatherPhoneNumber'
-              label=<p className='text-base'>Số điện thoại bố</p>
+              label={<p className='text-base'>Số điện thoại bố</p>}
               placeholder='+ 84'
             />
           </Col>
@@ -234,8 +215,7 @@ export function FormInfoUser() {
             />
           </Col>
           <Col>
-            <ProFormSelect
-              options={optionFamilySituation}
+            <ProFormText
               fieldProps={{
                 size: 'large',
               }}

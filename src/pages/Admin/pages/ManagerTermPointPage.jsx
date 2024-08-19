@@ -501,7 +501,7 @@ function ManagerTermPointPage() {
         <Table
           scroll={{
             x: 1800,
-            y: 630,
+            y: 5000,
           }}
           rowKey='id'
           rowSelection={{
@@ -522,7 +522,7 @@ function ManagerTermPointPage() {
           }}
         />
         {pointList.length > 0 && (
-          <div className='absolute bottom-3 left-0'>
+          <div className='absolute bottom-[20px]'>
             <ButtonCustom
               title='Xuất danh sách điểm'
               loading={exportFileData.isLoading}

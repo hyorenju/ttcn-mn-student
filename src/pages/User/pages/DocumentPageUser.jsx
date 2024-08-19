@@ -47,7 +47,8 @@ function DocumentPageUser(props) {
         <div className='bg-white p-3 md:px-12 md:py-8 lg:px-20 lg:py-14 xl:px-40 xl:py-20 '>
           <div className='flex justify-between'>
             <h2 className='pl-6 md:pl-8 xl:mb-6 border-l-8 border-primary-color uppercase text-primary-color font-semibold text:xl md:text-2xl lg:text-3xl xl:text-4xl mb-4'>
-              Tài liệu học tập
+              Tài liệu tham khảo
+              <span className='text-red-500'>{` (Đang phát triển)`}</span>
             </h2>
             <ButtonCustom
               handleClick={() => setOpenModalForm(true)}

@@ -224,7 +224,7 @@ function ManagerAuthorizationPage(props) {
       />
       <Table
         scroll={{
-          y: 630,
+          y: 5000,
         }}
         rowKey='id'
         loading={getAdminList.isFetching}

@@ -576,7 +576,7 @@ function ManagerStudentPage() {
         <Table
           scroll={{
             x: 1500,
-            y: 630,
+            y: 5000,
           }}
           rowKey='id'
           loading={getStudentList.isFetching}
@@ -597,7 +597,7 @@ function ManagerStudentPage() {
           }}
         />
         {studentList.length > 0 && (
-          <div className='absolute bottom-0 left-0'>
+          <div className='absolute bottom-[20px]'>
             <ButtonCustom
               title='Xuất danh sách sinh viên'
               loading={exportStudentFormExcel.isLoading}

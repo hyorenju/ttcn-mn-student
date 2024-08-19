@@ -334,7 +334,7 @@ function ManagerStatusPage() {
     },
     {
       align: 'center',
-      width: '4%',
+      width: '5%',
       render: (index, record) =>
         roleId !== 'MOD' && (
           <Popover
@@ -410,7 +410,7 @@ function ManagerStatusPage() {
           rowKey='id'
           loading={isFetching}
           scroll={{
-            y: 630,
+            y: 5000,
           }}
           bordered={true}
           dataSource={data?.data?.items}
@@ -425,7 +425,7 @@ function ManagerStatusPage() {
           }}
         />
         {data?.data?.items.length > 0 && (
-          <div className='absolute bottom-0 left-0'>
+          <div className='absolute bottom-[20px]'>
             <ButtonCustom
               title='Xuất danh sách tình trạng sinh viên'
               loading={exportStudentFormExcel.isLoading}

@@ -20,16 +20,16 @@ import { DefaultLayoutPage } from '../components/Layout/DefaultLayoutPage';
 import { SlideShowHeader } from '../components/Slider';
 
 export const urlImage = [
-  { url: img1 },
-  { url: img2 },
-  { url: img3 },
-  { url: img4 },
-  { url: img5 },
-  { url: img6 },
-  { url: img7 },
+  // { url: img1 },
+  // { url: img2 },
+  // { url: img3 },
+  // { url: img4 },
+  // { url: img5 },
+  // { url: img6 },
+  // { url: img7 },
   { url: img8 },
-  { url: img9 },
-  { url: img10 },
+  // { url: img9 },
+  // { url: img10 },
 ];
 
 // Lịch sử phát triển
@@ -184,7 +184,7 @@ export const TargetOf = () => {
         <div className='w-[8rem] h-[8rem] xl:w-[15rem] xl:h-[15rem]'>
           <img
             className='w-full h-full object-cover rounded-full border-8'
-            src='https://media.istockphoto.com/id/926799886/vi/anh/h%C3%ACnh-b%C3%B3ng-c%E1%BB%A7a-ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-trong-v%C4%83n-ph%C3%B2ng-v%C3%A0-%C4%91%E1%BB%93-h%E1%BB%8Da-th%C3%B4ng-tin-c%E1%BB%A7a-c%C3%B4ng-ty.jpg?s=612x612&w=0&k=20&c=ZmmMoB_RbIjumEP6urHdxP4sA2gJTh8_Z3dcX8CKUUs='
+            src='https://media.vneconomy.vn/w800/images/upload/2023/02/25/38-41-1.png'
             alt='img'
           />
         </div>

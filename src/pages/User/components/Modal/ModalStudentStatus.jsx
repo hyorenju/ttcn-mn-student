@@ -8,17 +8,19 @@ export function ModalStudentStatus({ open, onOpenChange }) {
     queryFn: () => studentApi.statusList(),
   });
   const columns = [
-    { align: 'center', title: 'Thời gian', dataIndex: ['time'], width: '15%' },
-    { align: 'center', title: 'Học kỳ', dataIndex: ['term', 'termName'], width: '25%' },
+    { title: 'Thời gian', dataIndex: ['time'], width: '15%' },
+    { title: 'Học kỳ', dataIndex: ['term', 'termName'], width: '20%' },
+    { title: 'Trạng thái', dataIndex: ['status', 'name'], width: '20%' },
     { title: 'Chú thích', dataIndex: ['note'] },
   ];
   return (
     <Modal open={open} onCancel={() => onOpenChange(false)} onOk={() => onOpenChange(false)} width={800}>
       <Table
         scroll={{
-          x: 700,
-          y: 500,
+          x: 900,
+          y: 5000,
         }}
+        bordered
         dataSource={data?.data?.items}
         loading={isLoading}
         columns={columns}
