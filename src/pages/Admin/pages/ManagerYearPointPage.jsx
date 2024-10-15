@@ -23,6 +23,7 @@ import {
   FilterOutlined,
   MoreOutlined,
   PlusCircleOutlined,
+  QuestionCircleOutlined,
   SearchOutlined,
   UploadOutlined,
   UsergroupDeleteOutlined,
@@ -459,6 +460,14 @@ function ManagerYearPointPage() {
         </Title>
         {roleId !== 'MOD' && (
           <Space>
+            <QuestionCircleOutlined
+              title='Bấm để xem file mẫu import'
+              className='hover:cursor-pointer hover:text-primary'
+              onClick={() => {
+                getDataError.mutate();
+                setOpenModalError(true);
+              }}
+            />
             <Upload {...props}>
               <ButtonCustom
                 title={'Thêm danh sách điểm'}
@@ -474,7 +483,7 @@ function ManagerYearPointPage() {
         <Table
           scroll={{
             x: 1800,
-            y: 5000,
+            y: '66vh',
           }}
           rowKey='id'
           rowSelection={{

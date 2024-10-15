@@ -29,6 +29,7 @@ import {
   UploadOutlined,
   UserAddOutlined,
   UsergroupDeleteOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -561,6 +562,14 @@ function ManagerStudentPage() {
         </Title>
         {roleId !== 'MOD' && (
           <Space size={8}>
+            <QuestionCircleOutlined
+              title='Bấm để xem file mẫu import'
+              className='hover:cursor-pointer hover:text-primary'
+              onClick={() => {
+                getDataError.mutate();
+                setOpenModalError(true);
+              }}
+            />
             <Upload {...props}>
               <ButtonCustom
                 title='Thêm danh sách sinh viên'
@@ -576,7 +585,7 @@ function ManagerStudentPage() {
         <Table
           scroll={{
             x: 1500,
-            y: 5000,
+            y: '66vh',
           }}
           rowKey='id'
           loading={getStudentList.isFetching}

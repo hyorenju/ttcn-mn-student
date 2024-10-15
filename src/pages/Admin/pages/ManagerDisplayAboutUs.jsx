@@ -62,7 +62,7 @@ function ManagerDisplayAboutUs() {
         </Title>
         <Table
           scroll={{
-            y: 5000,
+            y: '66vh',
           }}
           rowKey='id'
           loading={isFetching}

@@ -179,7 +179,7 @@ export const ModalTrashCanStudent = ({ open, close }) => {
           rowKey='id'
           loading={getStudentListTrash.isFetching}
           scroll={{
-            y: 5000,
+            y: '66vh',
           }}
           rowSelection={{
             onChange: handleChangeRowKey,

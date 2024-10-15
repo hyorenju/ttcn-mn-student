@@ -8,6 +8,7 @@ import {
   DownloadOutlined,
   EditOutlined,
   PlusCircleOutlined,
+  QuestionCircleOutlined,
   SearchOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
@@ -259,9 +260,7 @@ function ManagerClassPage() {
   return (
     <div>
       <div className='flex justify-between items-center mb-3'>
-        <Upload {...props}>
-          <ButtonCustom title='Thêm danh sách lớp' icon={<UploadOutlined />} loading={importClassFile.isLoading} />
-        </Upload>
+        <div className='w-3'></div>
         <Title
           level={3}
           style={{
@@ -272,12 +271,25 @@ function ManagerClassPage() {
         >
           Danh sách các lớp trong khoa
         </Title>
-        <ButtonCustom title='Thêm lớp' icon={<PlusCircleOutlined />} handleClick={handleClickAddClass} />
+        <Space>
+          <QuestionCircleOutlined
+            title='Bấm để xem file mẫu import'
+            className='hover:cursor-pointer hover:text-primary'
+            onClick={() => {
+              getDataError.mutate();
+              setOpenModalError(true);
+            }}
+          />
+          <Upload {...props}>
+            <ButtonCustom title='Thêm danh sách lớp' icon={<UploadOutlined />} loading={importClassFile.isLoading} />
+          </Upload>
+          <ButtonCustom title='Thêm lớp' icon={<PlusCircleOutlined />} handleClick={handleClickAddClass} />
+        </Space>
       </div>
       <div className='relative'>
         <Table
           scroll={{
-            y: 5000,
+            y: '66vh',
           }}
           rowKey='id'
           bordered={true}

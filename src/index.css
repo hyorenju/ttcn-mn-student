@@ -51,3 +51,57 @@ a {
 .ant-input-disabled {
   color: black
 }
+
+.ant-table-cell {
+  border: 1px solid rgb(200, 200, 200);
+}
+.ant-table-container {
+  border: 2px solid rgb(200, 200, 200);
+}
+.ant-table-header{
+  border-bottom: 2px solid rgb(200, 200, 200);
+}
+
+
+.ant-btn{
+  border: solid #005b30 2px;
+}
+
+.ant-input-affix-wrapper {
+  border: solid #005b30 2px;
+  color: black;
+}
+
+.ant-input{
+  border: solid #005b30 2px;
+}
+
+.ant-picker{
+  border: solid #005b30 2px;
+
+}
+
+.ant-picker-disabled {
+  outline: solid #005b30 2px;
+  border: none;
+}
+
+.ant-input-affix-wrapper-disabled {
+  outline: solid #005b30 2px;
+  border: none;
+}
+
+.ant-select {
+  outline: solid #005b30 2px;
+  border-radius: 6px;
+}
+
+.ant-table-cell {
+  border: 1px solid rgb(200, 200, 200);
+}
+.ant-table-container {
+  border: 2px solid rgb(200, 200, 200);
+}
+.ant-table-header{
+  border-bottom: 2px solid rgb(200, 200, 200);
+}

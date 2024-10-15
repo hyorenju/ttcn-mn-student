@@ -189,7 +189,7 @@ export const ModalTrashCanPointOfYear = ({ open, close }) => {
           rowKey='id'
           loading={getDataTrashPoint.isFetching}
           scroll={{
-            y: 5000,
+            y: '66vh',
           }}
           rowSelection={{
             onChange: handleChangeSelection,

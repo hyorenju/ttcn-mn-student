@@ -10,6 +10,7 @@ import {
   DownloadOutlined,
   EditOutlined,
   MoreOutlined,
+  QuestionCircleOutlined,
   SearchOutlined,
   TableOutlined,
   UploadOutlined,
@@ -390,6 +391,14 @@ function ManagerStatusPage() {
         </Title>
         {roleId !== 'MOD' && (
           <Space>
+            <QuestionCircleOutlined
+              title='Bấm để xem file mẫu import'
+              className='hover:cursor-pointer hover:text-primary'
+              onClick={() => {
+                getDataError.mutate();
+                setOpenModalError(true);
+              }}
+            />
             <Upload {...props}>
               <ButtonCustom
                 title='Thêm danh sách tình trạng'
@@ -410,7 +419,7 @@ function ManagerStatusPage() {
           rowKey='id'
           loading={isFetching}
           scroll={{
-            y: 5000,
+            y: '66vh',
           }}
           bordered={true}
           dataSource={data?.data?.items}
